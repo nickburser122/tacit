@@ -139,7 +139,7 @@ class Scorer(var strictness: Strictness = Strictness.NORMAL) {
             if (!firstLetterOk(query, word)) continue
             val distance = prefixDistance(query, word, allowed)
             if (distance <= allowed) {
-                val value = 500 - distance * 100 - index * 10 - word.length
+                val value = 500 - distance * 100 - index * 10
                 if (value > best) best = value.coerceAtLeast(1)
             }
         }

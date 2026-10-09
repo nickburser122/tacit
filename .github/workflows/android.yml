@@ -31,7 +31,7 @@ jobs:
         if: failure()
         run: |
           {
-            grep -nE '^e: |error:|FAILED|What went wrong|Caused by|Execution failed|Could not|> ' build.log | head -150
+            grep -nE '^e: |error:|FAILED|What went wrong|Caused by|Execution failed|Could not|AssertionError|Exception|expected|at app\.tacit|Test' build.log | grep -v 'Task :' | head -150
           } > errors.txt || true
           msg=$(head -c 30000 errors.txt)
           msg="${msg//'%'/'%25'}"

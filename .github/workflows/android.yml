@@ -18,16 +18,26 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Install Android platform
-        run: |
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
-          "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-37" "platforms;android-36" "build-tools;36.0.0"
+      - name: Accept SDK licenses
+        run: yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses > /dev/null || true
 
       - name: Build, test, lint
         run: |
           chmod +x gradlew
           set -o pipefail
-          ./gradlew assembleDebug testDebugUnitTest lintDebug --stacktrace 2>&1 | tee build.log
+          ./gradlew assembleDebug testDebugUnitTest lintDebug --stacktrace --continue 2>&1 | tee build.log
+
+      - name: Show errors
+        if: failure()
+        run: |
+          {
+            grep -nE '^e: |error:|FAILED|What went wrong|Caused by|Execution failed|Could not|> ' build.log | head -150
+          } > errors.txt || true
+          msg=$(head -c 30000 errors.txt)
+          msg="${msg//'%'/'%25'}"
+          msg="${msg//$'\r'/'%0D'}"
+          msg="${msg//$'\n'/'%0A'}"
+          echo "::error title=Build errors::$msg"
 
       - name: Upload full build log
         if: always()

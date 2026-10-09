@@ -136,7 +136,7 @@ class SearchActivity : Activity(), RowCallbacks {
             selector = android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT)
             isFocusable = false
             itemsCanFocus = false
-            stackFromBottom = Graph.prefs.barAtBottom
+            setStackFromBottom(Graph.prefs.barAtBottom)
             setPadding(Ui.dp(context, 8), 0, Ui.dp(context, 8), 0)
             clipToPadding = false
         }

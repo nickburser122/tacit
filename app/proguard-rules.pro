@@ -1,0 +1,4 @@
+-keep class app.tacit.system.** { <init>(...); }
+-keep class app.tacit.ui.*Activity { <init>(); }
+-keep class app.tacit.actions.TacitFileProvider { <init>(); }
+-keep class app.tacit.TacitApp { <init>(); }

@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">Tacit</string>
+    <string name="widget_label">Tacit search</string>
+    <string name="search_hint">Search</string>
+    <string name="settings">Settings</string>
+    <string name="copied">Copied</string>
+    <string name="hidden_clip">Sensitive, hidden</string>
+
+    <string name="action_call">Call</string>
+    <string name="action_message">Message</string>
+    <string name="action_whatsapp">WhatsApp</string>
+    <string name="action_whatsapp_business">WhatsApp Business</string>
+
+    <string name="menu_alias">Aliases</string>
+    <string name="menu_pin">Pin</string>
+    <string name="menu_unpin">Unpin</string>
+    <string name="menu_app_info">App info</string>
+    <string name="menu_notifications">Notifications</string>
+    <string name="menu_uninstall">Uninstall</string>
+    <string name="menu_hide">Hide</string>
+    <string name="menu_open_contact">Open contact</string>
+    <string name="menu_share">Share</string>
+    <string name="menu_open_folder">Open folder</string>
+    <string name="menu_copy_path">Copy path</string>
+    <string name="menu_save_snippet">Save as snippet</string>
+    <string name="menu_delete">Delete</string>
+    <string name="menu_edit">Edit</string>
+    <string name="menu_copy">Copy</string>
+
+    <string name="alias_hint">Aliases, separated by commas</string>
+    <string name="alias_hint_short">alias, alias</string>
+    <string name="aliases_for">Aliases for %1$s</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="add">Add</string>
+
+    <string name="aliases">Aliases</string>
+    <string name="cat_apps">Apps</string>
+    <string name="cat_contacts">Contacts</string>
+    <string name="cat_settings">Settings</string>
+    <string name="cat_snippets">Snippets</string>
+    <string name="cat_shortcuts">Shortcuts</string>
+    <string name="filter">Filter</string>
+    <string name="fill_initials">Fill initials</string>
+    <string name="export_csv">Export CSV</string>
+    <string name="import_csv">Import CSV</string>
+    <string name="col_item">Item</string>
+    <string name="col_aliases">Aliases</string>
+    <string name="shared_aliases">Shared: %1$s</string>
+    <string name="imported_rows">%1$d rows imported</string>
+
+    <string name="snippets">Snippets</string>
+    <string name="snippet_trigger">Trigger</string>
+    <string name="snippet_title">Title</string>
+    <string name="snippet_body">Text</string>
+    <string name="snippet_placeholders" translatable="false">{date} {time} {datetime} {clipboard}. Formats: {date:dd/MM/yyyy}</string>
+
+    <string name="sec_look">Look</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_dark">Black</string>
+    <string name="theme_light">White</string>
+    <string name="icons">Icons</string>
+    <string name="icons_mono">Monochrome</string>
+    <string name="icons_color">Colour</string>
+    <string name="icons_none">Text only</string>
+    <string name="bar_bottom">Search bar at bottom</string>
+    <string name="show_clock">Clock</string>
+    <string name="show_date">Date</string>
+    <string name="wallpaper">Wallpaper</string>
+    <string name="result_count">Results</string>
+    <string name="unlimited">Unlimited</string>
+
+    <string name="sec_sources">Sources</string>
+    <string name="contacts">Contacts</string>
+    <string name="files">Files</string>
+    <string name="files_hidden">Hidden files</string>
+    <string name="rescan_files">Rescan files (%1$d indexed)</string>
+    <string name="files_permission_explain">All files access searches everything except Android/data and Android/obb. Or choose specific folders instead.</string>
+    <string name="clipboard">Clipboard history</string>
+    <string name="clipboard_limit">Android lets Tacit read the clipboard only while Tacit is open. Copies made between visits are missed.</string>
+    <string name="clip_days">Keep for days (0 = forever)</string>
+    <string name="clip_max">Keep items (0 = unlimited)</string>
+    <string name="sensitive_policy">Sensitive items</string>
+    <string name="sensitive_skip">Never store</string>
+    <string name="sensitive_expire">Delete after 1 minute</string>
+    <string name="sensitive_hide">Store, hide preview</string>
+    <string name="clear_clipboard">Clear clipboard history</string>
+    <string name="clear_clipboard_confirm">Delete all clipboard history?</string>
+
+    <string name="sec_search">Search</string>
+    <string name="fuzzy">Typo tolerance</string>
+    <string name="fuzzy_off">Off</string>
+    <string name="fuzzy_normal">Normal</string>
+    <string name="fuzzy_loose">Loose</string>
+    <string name="transliterate">Arabic ↔ Latin matching</string>
+    <string name="visible_password">Strict no-autocorrect input</string>
+    <string name="starred_pins">Starred contacts as pins</string>
+    <string name="kind_order">Type order</string>
+    <string name="hidden_items">Hidden (%1$d)</string>
+    <string name="hidden_title">Hidden</string>
+
+    <string name="sec_actions">Actions</string>
+    <string name="country_code">Default country code</string>
+    <string name="direct_call">Call without dialer</string>
+    <string name="default_engine">Default web engine prefix</string>
+    <string name="engines" formatted="false">Web engines (prefix|name|url with %s)</string>
+    <string name="close_after">Clear after launch</string>
+    <string name="exclude_recents">Hide from recents</string>
+    <string name="precision">Calculator precision</string>
+
+    <string name="sec_prefixes">Prefixes</string>
+    <string name="p_calc">Calculator</string>
+    <string name="p_clip">Clipboard</string>
+    <string name="p_settings">Settings</string>
+    <string name="p_contacts">Contacts</string>
+    <string name="p_files">Files</string>
+    <string name="p_snippets">Snippets</string>
+
+    <string name="sec_system">System</string>
+    <string name="set_home">Home app</string>
+    <string name="set_assistant">Default apps</string>
+    <string name="keys">Keys</string>
+    <string name="keys_body">Enter  open top result\n↑ ↓  move\nTab  more actions\nEsc  clear, then close\nLong press  more actions\n\n%1$s  calculator\n%2$s ⎵  clipboard\n%3$s  settings\n%4$s  contacts\n%5$s  files\n%6$s  snippets\next:pdf  in:download  file filters\n\n%7$s</string>
+    <string name="export_all">Export everything</string>
+    <string name="import_all">Import</string>
+    <string name="share_crash">Share last crash</string>
+    <string name="rebuild_index">Rebuild index</string>
+    <string name="about_line">Tacit. Offline. No tracking. GPL-3.0.</string>
+
+    <string name="files_all_access">All files access</string>
+    <string name="files_choose_folders">Choose folders</string>
+    <string name="files_mode_all">Searching all shared storage.</string>
+    <string name="files_mode_folders">Searching only the folders you chose. Android does not allow choosing the whole storage or Download root this way.</string>
+    <string name="files_folder_item">Folder: %1$s</string>
+    <string name="files_folder_remove">Stop searching %1$s?</string>
+    <string name="files_add_folder">Add folder</string>
+    <string name="clip_biometric">Lock clipboard with fingerprint or screen lock</string>
+    <string name="clip_biometric_unavailable">Set a screen lock to enable the clipboard lock.</string>
+    <string name="clip_locked">Clipboard locked</string>
+    <string name="clip_locked_hint">Tap to unlock</string>
+    <string name="clip_unlock_title">Unlock clipboard</string>
+
+    <string name="shortcut_settings">Settings</string>
+    <string name="shortcut_aliases">Aliases</string>
+</resources>

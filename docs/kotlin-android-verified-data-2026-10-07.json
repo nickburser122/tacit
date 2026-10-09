@@ -1,0 +1,885 @@
+{
+  "meta": {
+    "title": "Kotlin / Android verified data sheet for AI code generation",
+    "as_of": "2026-10-07",
+    "purpose": "Trusted version and compatibility data so a code-generating model does not need web search and cannot compile or test in its environment.",
+    "supersedes": "kotlin-android-versions-2026-10-07.md (earlier, narrower sheet; its AGP 9.3.3 entry is outdated, see corrections)",
+    "how_to_use": [
+      "Use only versions listed here. If a library is not listed, say so and ask the user instead of guessing a version.",
+      "confidence=high: read from an official primary page (kotlinlang.org, developer.android.com, Google Play Help, GitHub releases of the project).",
+      "confidence=medium: derived from secondary evidence (dependabot/renovate PRs quoting release notes, package indexes, feed aggregators). Use it, but suspect it first if the first CI run fails on dependency resolution.",
+      "confidence=unverified: from model/training knowledge only, not checked on 2026-10-07. Do not rely on it without user confirmation.",
+      "version_catalog_toml contains only high and medium entries.",
+      "Patch releases newer than listed may exist. Pinned versions here are known-good minimums, not guaranteed latest patches."
+    ],
+    "final_audit_2026-10-07": [
+      "OkHttp 5.5.0 re-checked: renovate PR dated 2026-09-26 upgrades to 5.5.0, so it is current.",
+      "Coil 3.6.1 re-checked: two independent dependabot PRs show 3.6.0 and 3.6.1 exist.",
+      "AGP 9.4.0, Kotlin 2.4.20, Compose BOM 2026.09.00, KSP 2.3.12 and Play targetSdk 36 were read from primary sources and need no re-check."
+    ],
+    "corrections_to_previous_sheet": [
+      {
+        "item": "Android Gradle Plugin",
+        "previous": "9.3.3",
+        "corrected": "9.4.0 (September 2026, stable)",
+        "reason": "AGP 9.4.0 release notes and Android Studio Rabbit 1 stable page list 9.4.0 as stable"
+      },
+      {
+        "item": "Minimum Gradle",
+        "previous": "9.5.0 (for AGP 9.3)",
+        "corrected": "9.6.0 (for AGP 9.4)",
+        "reason": "AGP 9.4.0 compatibility table"
+      },
+      {
+        "item": "targetSdk",
+        "previous": "36 or 37, Play deadline not verified",
+        "corrected": "Play requires targetSdk 36 or higher for new apps and updates since 2026-08-31",
+        "reason": "developer.android.com Play target API requirements page"
+      },
+      {
+        "item": "Retrofit, OkHttp, Coil, Ktor, Koin",
+        "previous": "not verified",
+        "corrected": "now covered in networking, images, di sections",
+        "reason": "researched this session"
+      }
+    ]
+  },
+  "toolchain": {
+    "kotlin": {
+      "version": "2.4.20",
+      "confidence": "high",
+      "source": "kotlinlang.org/docs/releases.html and whatsnew2420",
+      "released": "2026-09-07",
+      "notes": [
+        "Previous: 2.4.10 (2026-07-14), 2.4.0 (2026-06-03).",
+        "Kotlin 2.5.0 is in Beta1; do not use.",
+        "Fully compatible with Gradle 7.6.3 through 9.7.0; newer Gradle works with possible deprecation warnings.",
+        "The kotlin runner command is now kotlinr, not kotlin."
+      ]
+    },
+    "agp": {
+      "version": "9.4.0",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-4-0-release-notes",
+      "released": "2026-09",
+      "notes": [
+        "Requires Gradle 9.6.0+, SDK Build Tools 36.0.0, JDK 17. Max API level 37. Default NDK 28.2.13676358.",
+        "Variant API becomes mandatory in AGP 10; android.newDsl.optOut=:module opts a single module out until then.",
+        "AGP 9.3.x was the previous minor (9.3.3 latest patch seen). AGP 9.4 patch releases may exist beyond 9.4.0."
+      ]
+    },
+    "gradle_wrapper": {
+      "version": "9.7.1",
+      "confidence": "high",
+      "source": "github.com/gradle/gradle-distributions/releases",
+      "released": "2026-08-19",
+      "notes": [
+        "Satisfies AGP 9.4 minimum 9.6.0 and is above Kotlin 2.4.20's tested ceiling of 9.7.0 only by a patch.",
+        "Gradle 9.8.0 appears to have just been released (seen via feed aggregator, medium confidence); 9.7.1 is the conservative choice.",
+        "gradle-wrapper.jar is a binary: a text-only generator cannot create it. See blind_build_playbook."
+      ]
+    },
+    "jdk": {
+      "version": "17",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-4-0-release-notes",
+      "notes": [
+        "AGP minimum and default. JDK 21 also fine for running Gradle. AGP 9.0 changed default Java source/target from 8 to 11."
+      ]
+    },
+    "ksp": {
+      "version": "2.3.12",
+      "confidence": "high",
+      "source": "github.com/google/ksp/releases",
+      "released": "2026-09-09",
+      "notes": [
+        "Versioned independently of Kotlin since 2.3.x (Ktorfit notes show KSP 2.3.9 used with Kotlin 2.4.0).",
+        "AGP 9 raises a lower KSP to at least 2.2.10-2.0.2 automatically."
+      ]
+    },
+    "android_studio": {
+      "version": "Rabbit 1 | 2026.2.1",
+      "confidence": "high",
+      "source": "developer.android.com/studio/releases",
+      "notes": [
+        "Stable channel. Compatible AGP range 7.1-9.4.",
+        "Previous stable: Quail 4 | 2026.1.4 (2026-09-01), also 7.1-9.4.",
+        "Rabbit 2 is canary.",
+        "API level 37 needs Studio Panda 3 Patch 1 or newer and AGP 9.1.1 or newer."
+      ]
+    }
+  },
+  "android_platform": {
+    "compileSdk": {
+      "version": "37",
+      "confidence": "high",
+      "source": "android-developers.googleblog.com Compose August '26 and AGP 9.4 notes",
+      "notes": [
+        "Compose 1.12 requires compileSdk 37 and AGP 9.1.1+.",
+        "API 37 corresponds to Android 17."
+      ]
+    },
+    "targetSdk": {
+      "version": "36 or higher",
+      "confidence": "high",
+      "source": "developer.android.com/google/play/requirements/target-sdk",
+      "released": "2026-08-31",
+      "notes": [
+        "Since 2026-08-31 new apps and app updates must target API 36+. Wear OS and Automotive: 35+. TV and XR: 34+.",
+        "Existing apps must target 35+ to stay visible to new users on newer Android.",
+        "AGP 9 defaults targetSdk to compileSdk if unset (android.sdk.defaultTargetSdkToCompileSdkIfUnset=true). Set targetSdk explicitly."
+      ]
+    },
+    "minSdk": {
+      "version": "user choice",
+      "confidence": "high",
+      "source": "n/a",
+      "notes": [
+        "Hilt 2.60 requires minSdk 23.",
+        "Android 14+ refuses to install apps targeting below API 23."
+      ]
+    },
+    "android16_back_behavior": {
+      "version": "apps targeting 36 on Android 16+ no longer receive Activity.onBackPressed() or KEYCODE_BACK",
+      "confidence": "medium",
+      "source": "github.com/codenameone/CodenameOne/issues/5665 (summary of Android 16 behavior)",
+      "notes": [
+        "Use OnBackPressedCallback / BackHandler / PredictiveBackHandler. Temporary opt-out: android:enableOnBackInvokedCallback=\"false\" in the manifest."
+      ]
+    }
+  },
+  "compatibility_matrix": [
+    {
+      "rule": "AGP 9.4.0 needs Gradle >= 9.6.0, JDK 17, Build Tools 36.0.0",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-4-0-release-notes"
+    },
+    {
+      "rule": "AGP 9.3 needs Gradle >= 9.5.0; AGP 9.2 needs Gradle >= 9.4.1; AGP 9.0 needs Gradle >= 9.1.0",
+      "confidence": "high",
+      "source": "developer.android.com AGP release notes"
+    },
+    {
+      "rule": "AGP 9.x built-in Kotlin has a runtime dependency on KGP 2.2.10 minimum",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "Kotlin 2.4.20 supports Gradle 7.6.3 through 9.7.0 fully",
+      "confidence": "high",
+      "source": "kotlinlang.org/docs/whatsnew2420.html"
+    },
+    {
+      "rule": "Compose 1.12 (BOM 2026.08.00 and later) requires compileSdk 37 and AGP >= 9.1.1",
+      "confidence": "high",
+      "source": "android-developers.googleblog.com/2026/08/jetpack-compose-august-2026-release.html"
+    },
+    {
+      "rule": "Android Studio Rabbit 1 and Quail 4 both support AGP 7.1 through 9.4",
+      "confidence": "high",
+      "source": "developer.android.com/studio/releases"
+    },
+    {
+      "rule": "Hilt 2.60.x is the latest seen and supports AGP 9; Hilt 2.60 minSdk is 23",
+      "confidence": "medium",
+      "source": "github.com/google/dagger release notes quoted in dependabot PRs"
+    },
+    {
+      "rule": "Robolectric 4.17 supports SDK 37",
+      "confidence": "high",
+      "source": "github.com/robolectric/robolectric/releases"
+    },
+    {
+      "rule": "kotlinx.serialization 1.11.0 was built against Kotlin 2.3.x; the serialization compiler plugin must still match the project Kotlin version (2.4.20)",
+      "confidence": "medium",
+      "source": "klibs.io and release notes"
+    },
+    {
+      "rule": "Coil with Ktor 3.5.1 or 3.5.2 using Ktor's Android engine crashes on network image loads; the OkHttp engine works",
+      "confidence": "medium",
+      "source": "github.com/coil-kt/coil/issues/3530 (reported against Coil 3.5.0)"
+    }
+  ],
+  "agp9_build_rules": [
+    {
+      "rule": "Kotlin support is built in. Do not apply org.jetbrains.kotlin.android or kotlin-android. That plugin is incompatible with the new DSL.",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes",
+      "opt_out": "android.builtInKotlin=false and android.newDsl=false (opt-out disappears in AGP 10)"
+    },
+    {
+      "rule": "To use a Kotlin or KSP version higher than AGP's built-in 2.2.10, declare it in the top-level build file: buildscript { dependencies { classpath(\"org.jetbrains.kotlin:kotlin-gradle-plugin:KGP_VERSION\") ; classpath(\"com.google.devtools.ksp:symbol-processing-gradle-plugin:KSP_VERSION\") } }",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "Still apply org.jetbrains.kotlin.plugin.compose (and plugin.serialization if used) with version equal to the Kotlin version. The Compose compiler is a Kotlin plugin, not composeOptions.kotlinCompilerExtensionVersion.",
+      "confidence": "medium",
+      "source": "Compose setup docs plus AGP 9 notes; plugin DSL specifics not individually verified"
+    },
+    {
+      "rule": "The kapt plugin does not work with built-in Kotlin (AGP added a clearer error; a com.android.legacy-kapt plugin exists). Use KSP for Room and Hilt.",
+      "confidence": "medium",
+      "source": "AGP 9.0.0 fixed-issues list (issues 442763200, 446889652)"
+    },
+    {
+      "rule": "android.useAndroidx defaults to true, android.uniquePackageNames true, android.sdk.defaultTargetSdkToCompileSdkIfUnset true, android.defaults.buildfeatures.resvalues false, android.defaults.buildfeatures.shaders false",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "getDefaultProguardFile() only supports proguard-android-optimize.txt. proguard-android.txt is disallowed.",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "R8 strict full mode: -keep class A no longer implies keeping the default constructor. Optimized resource shrinking is on by default. A missing keep file fails the build.",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "Variant API: use androidComponents { onVariants / beforeVariants }. applicationVariants, variantFilter, sdkDirectory, dexOptions are gone.",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "Official examples use block form for SDK levels: minSdk { version = release(28) }. Plain integer properties are not listed as removed.",
+      "confidence": "medium",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "AGP 9.3 adds an optimization { enable = true } block per build type (enables code and resource shrinking) and keep rules in src/<variant>/keepRules/*.keep. The legacy minifyEnabled DSL still works. Fixed in 9.3.3: optimization.enable not setting isMinifyEnabled on the variant.",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-3-0-release-notes"
+    },
+    {
+      "rule": "kotlinOptions {} is deprecated/removed in favor of kotlin { compilerOptions { jvmTarget.set(JvmTarget.JVM_17) } }",
+      "confidence": "unverified",
+      "source": "training knowledge, not verified this session"
+    },
+    {
+      "rule": "AGP 9 requires consumers of a library to use the same or higher compileSdk by default",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    },
+    {
+      "rule": "Embedded Wear OS apps (wearApp config) and density split APKs were removed in AGP 9.0",
+      "confidence": "high",
+      "source": "developer.android.com/build/releases/agp-9-0-0-release-notes"
+    }
+  ],
+  "compose": {
+    "bom": {
+      "version": "2026.09.00",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel and mvnrepository.com/artifact/androidx.compose/compose-bom",
+      "released": "2026-09-09",
+      "notes": [
+        "Core Compose modules in this BOM: 1.12.1 (ui, foundation, animation, runtime, material).",
+        "Previous BOMs: 2026.08.00 (Compose 1.12.0), 2026.06.01 (1.11.4)."
+      ]
+    },
+    "core_compose": {
+      "version": "1.12.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-09"
+    },
+    "material3_stable": {
+      "version": "1.4.0",
+      "confidence": "medium",
+      "source": "skills.sh m3-expressive notes citing BOM 2026.08.00; developer.android.com release page",
+      "released": "2025-09-24",
+      "notes": [
+        "1.5.0 is still alpha (alpha26 seen Aug 2026). Material 3 Expressive APIs (MaterialExpressiveTheme, MotionScheme.expressive, ButtonGroup, split buttons, FAB menu, floating toolbars, wavy progress, MaterialShapes) are internal in 1.4.0 or need 1.5.0 alphas. Do not use unless the user asks and opts into the alpha BOM.",
+        "From 1.5.0-alpha23 most expressive APIs graduated; LoadingIndicator, ContainedLoadingIndicator, MaterialShapes still opt-in in alpha26."
+      ]
+    },
+    "material3_adaptive": {
+      "version": "1.3.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-08-12"
+    },
+    "api_changes_1_12": [
+      "Modifier.onFirstVisible() is deprecated; use Modifier.onVisibilityChanged().",
+      "SideEffect now has a keyed overload SideEffect(key1, key2) { }.",
+      "BasicTextField(state = TextFieldState) with edit { addStyle(SpanStyle, start, end) } supports inline rich formatting.",
+      "New SelectionState via rememberSelectionState() for SelectionContainer.",
+      "Credential Manager integration through Modifier.semantics { credentialRequest = ... }.",
+      "KeyboardType gains Date, Time, DateTime, SignedDecimal.",
+      "BasicSecureTextField uses TextObfuscationMode.System by default.",
+      "MeshGradientPainter added for mesh gradients. Grid named areas are experimental (ExperimentalGridApi).",
+      "Styles API is experimental and will have breaking changes.",
+      "New test APIs: hasPendingWork, runWithoutImplicitWait, onRootWithViewInteraction; captureToImage can include popups."
+    ],
+    "confidence_api_changes": "high",
+    "source_api_changes": "android-developers.googleblog.com/2026/08/jetpack-compose-august-2026-release.html"
+  },
+  "androidx": {
+    "activity_compose": {
+      "version": "1.13.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-03-11",
+      "group": "androidx.activity"
+    },
+    "core_ktx": {
+      "version": "1.19.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23",
+      "group": "androidx.core"
+    },
+    "core_splashscreen": {
+      "version": "1.2.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-11-05",
+      "group": "androidx.core"
+    },
+    "appcompat": {
+      "version": "1.8.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-08-12",
+      "group": "androidx.appcompat"
+    },
+    "annotation": {
+      "version": "1.11.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23"
+    },
+    "fragment": {
+      "version": "1.9.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23"
+    },
+    "lifecycle": {
+      "version": "2.11.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-06-17",
+      "notes": [
+        "2.12.0 is alpha. Use lifecycle-runtime-compose and lifecycle-viewmodel-compose; collectAsStateWithLifecycle() lives in lifecycle-runtime-compose."
+      ],
+      "group": "androidx.lifecycle"
+    },
+    "navigation_compose": {
+      "version": "2.10.2",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23",
+      "notes": [
+        "Type-safe routes with @Serializable classes and the kotlin serialization plugin."
+      ],
+      "group": "androidx.navigation"
+    },
+    "navigation3": {
+      "version": "1.2.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23",
+      "notes": [
+        "Stable since 1.0.0 (2025-11-19). Newer API model than Navigation Compose: you own the back stack. Less training-data coverage; prefer Navigation Compose unless asked."
+      ],
+      "group": "androidx.navigation3",
+      "artifacts": [
+        "navigation3-runtime",
+        "navigation3-ui"
+      ]
+    },
+    "navigationevent": {
+      "version": "1.1.2",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-06-17"
+    },
+    "savedstate": {
+      "version": "1.5.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-05-19"
+    },
+    "room": {
+      "version": "2.8.5",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-09",
+      "notes": [
+        "Use KSP (room-compiler via ksp). Version 2.8.x is the androidx.room package."
+      ],
+      "group": "androidx.room"
+    },
+    "room3": {
+      "version": "3.0.3",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-09",
+      "notes": [
+        "New package name androidx.room3. API details were not reviewed this session. Avoid unless the user asks."
+      ],
+      "group": "androidx.room3"
+    },
+    "sqlite": {
+      "version": "2.7.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-09"
+    },
+    "datastore": {
+      "version": "1.2.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-03-11",
+      "group": "androidx.datastore"
+    },
+    "work": {
+      "version": "2.12.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23",
+      "group": "androidx.work",
+      "artifacts": [
+        "work-runtime-ktx"
+      ]
+    },
+    "hilt_androidx": {
+      "version": "1.4.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-07-01",
+      "group": "androidx.hilt",
+      "artifacts": [
+        "hilt-navigation-compose"
+      ]
+    },
+    "paging": {
+      "version": "3.5.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-08-12",
+      "group": "androidx.paging"
+    },
+    "media3": {
+      "version": "1.11.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-10",
+      "group": "androidx.media3"
+    },
+    "camera": {
+      "version": "1.6.2",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-08-26",
+      "group": "androidx.camera"
+    },
+    "glance": {
+      "version": "1.2.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-08-26",
+      "group": "androidx.glance"
+    },
+    "credentials": {
+      "version": "1.6.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-04-08",
+      "group": "androidx.credentials"
+    },
+    "browser": {
+      "version": "1.10.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-03-25",
+      "group": "androidx.browser"
+    },
+    "webkit": {
+      "version": "1.17.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23",
+      "group": "androidx.webkit"
+    },
+    "window": {
+      "version": "1.5.1",
+      "confidence": "medium",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-11-19",
+      "notes": [
+        "No newer stable seen in the stable-channel list; a newer one could exist."
+      ],
+      "group": "androidx.window"
+    },
+    "constraintlayout": {
+      "version": "2.2.2",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-07-29",
+      "notes": [
+        "constraintlayout-compose is 1.1.2."
+      ]
+    },
+    "collection": {
+      "version": "1.6.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-03-11"
+    },
+    "tracing": {
+      "version": "2.0.3",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23"
+    },
+    "benchmark": {
+      "version": "1.5.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-09"
+    },
+    "wear_compose": {
+      "version": "1.7.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-09-23",
+      "notes": [
+        "Wear tiles 1.6.2, protolayout 1.4.2."
+      ]
+    }
+  },
+  "androidx_test": {
+    "runner": {
+      "version": "1.7.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-30"
+    },
+    "rules": {
+      "version": "1.7.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-30"
+    },
+    "core": {
+      "version": "1.7.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-30"
+    },
+    "ext_junit": {
+      "version": "1.3.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-30",
+      "group": "androidx.test.ext"
+    },
+    "ext_truth": {
+      "version": "1.7.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-30"
+    },
+    "espresso": {
+      "version": "3.7.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-30"
+    },
+    "uiautomator": {
+      "version": "2.4.0",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2026-07-01"
+    },
+    "orchestrator": {
+      "version": "1.6.1",
+      "confidence": "high",
+      "source": "developer.android.com/jetpack/androidx/versions/stable-channel",
+      "released": "2025-07-31"
+    },
+    "compose_ui_test": {
+      "version": "from Compose BOM",
+      "confidence": "high",
+      "source": "Compose BOM",
+      "artifacts": [
+        "ui-test-junit4",
+        "ui-test-manifest"
+      ]
+    },
+    "agp9_default_runner_note": "AGP 9 defaults to androidx.test.runner.AndroidJUnitRunner for instrumented tests; still set testInstrumentationRunner explicitly."
+  },
+  "kotlinx": {
+    "coroutines": {
+      "version": "1.11.0",
+      "confidence": "medium",
+      "source": "github.com/Kotlin/kotlinx.coroutines releases quoted in dependabot PRs",
+      "notes": [
+        "Artifacts: kotlinx-coroutines-android, kotlinx-coroutines-test. Test API deprecation levels were advanced in 1.11.0."
+      ]
+    },
+    "serialization_json": {
+      "version": "1.11.0",
+      "confidence": "medium",
+      "source": "github.com/Kotlin/kotlinx.serialization releases; klibs.io",
+      "notes": [
+        "1.12.0-RC exists (2026-09-04); do not use RC.",
+        "kotlin.time.Instant serializers live in kotlinx-serialization (kotlinx-datetime 0.7+ removed its own Instant)."
+      ]
+    },
+    "datetime": {
+      "version": "0.8.0",
+      "confidence": "high",
+      "source": "github.com/Kotlin/kotlinx-datetime/releases",
+      "released": "2026-05-07",
+      "notes": [
+        "Breaking: TimeZone serialization deprecated. Instant is kotlin.time.Instant from the standard library."
+      ]
+    }
+  },
+  "networking": {
+    "retrofit": {
+      "version": "3.0.0",
+      "confidence": "medium",
+      "source": "github.com/lysine-dev/retrofit/releases",
+      "notes": [
+        "Repo moved from square/retrofit to lysine-dev/retrofit; Maven group is still com.squareup.retrofit2.",
+        "3.x is binary-compatible with 2.x and is built on OkHttp 4.12 (transitive).",
+        "Official converters share the Retrofit version (converter-kotlinx-serialization, converter-moshi, converter-gson); the exact kotlinx-serialization converter artifact name is from training knowledge (unverified).",
+        "Compatibility of Retrofit 3.0.0 with OkHttp 5.x was not verified here."
+      ]
+    },
+    "okhttp": {
+      "version": "5.5.0",
+      "confidence": "medium",
+      "source": "renovate PR dated 2026-09-26 (5.3.2 to 5.5.0) and dependabot PR (5.4.0 to 5.5.0); square.github.io/okhttp/changelogs/changelog",
+      "notes": [
+        "Project moved to lysine-dev/okhttp (Commonhaus Foundation). Gradle artifact is com.squareup.okhttp3:okhttp; OkHttp is a Kotlin Multiplatform project and Gradle resolves the Android variant automatically (Maven-only projects must pick okhttp-android or okhttp-jvm).",
+        "5.x has been stable since 5.0.0. Later additions include the okhttp-zstd module and opt-in Encrypted Client Hello (ECH) in 5.5.",
+        "Retrofit 3.0.0 is tested against OkHttp 4.12; compatibility with 5.x was not verified here. Gradle resolves the highest declared version."
+      ]
+    },
+    "ktor_client": {
+      "version": "3.6.0",
+      "confidence": "high",
+      "source": "github.com/ktorio/ktor/releases",
+      "released": "2026-09-16",
+      "notes": [
+        "Previous: 3.5.2 (2026-07-31/08-04), 3.5.0 (2026-05-14).",
+        "Use ktor-client-okhttp engine on Android. Ktor 3.5.1+/Android engine breaks Coil network loads (reported)."
+      ]
+    }
+  },
+  "images": {
+    "coil3": {
+      "version": "3.6.1",
+      "confidence": "medium",
+      "source": "two independent dependabot PRs (3.5.0 to 3.6.1 and 3.6.0 to 3.6.1); coil-kt/coil releases page snapshot only showed 3.5.0",
+      "notes": [
+        "Coil 3 needs a network artifact: coil-compose plus coil-network-okhttp (or coil-network-ktor3). Package is coil3.*.",
+        "Coil 2.x (io.coil-kt:coil-compose, package coil.*) is the old API; do not mix."
+      ]
+    }
+  },
+  "di": {
+    "hilt": {
+      "version": "2.60.1",
+      "confidence": "medium",
+      "source": "github.com/google/dagger releases quoted in dependabot PRs",
+      "released": "2026-07",
+      "notes": [
+        "Use KSP: ksp(libs.hilt.compiler). Gradle plugin id com.google.dagger.hilt.android.",
+        "Hilt 2.60 minSdk 23."
+      ]
+    },
+    "koin": {
+      "version": "4.2.1",
+      "confidence": "medium",
+      "source": "klibs.io listing koin-compose-navigation3 (release 2026-04-09)",
+      "released": "2026-04-09",
+      "notes": [
+        "Group io.insert-koin. Koin Compiler Plugin exists for compile-time safety (0.4.1 seen in playground app, low confidence). A newer Koin release could exist."
+      ]
+    }
+  },
+  "testing": {
+    "mockk": {
+      "version": "1.14.11",
+      "confidence": "high",
+      "source": "mvnrepository.com/artifact/io.mockk/mockk; libhunt",
+      "released": "2026-05-29"
+    },
+    "robolectric": {
+      "version": "4.17",
+      "confidence": "high",
+      "source": "github.com/robolectric/robolectric/releases",
+      "notes": [
+        "Supports SDK 37."
+      ]
+    },
+    "mockito_kotlin": {
+      "version": "6.3.0",
+      "confidence": "medium",
+      "source": "github.com/mockito/mockito-kotlin/releases"
+    },
+    "junit_jupiter": {
+      "version": "6.0.1",
+      "confidence": "medium",
+      "source": "en.wikipedia.org/wiki/JUnit (stable release 2025-10-31)",
+      "released": "2025-10-31",
+      "notes": [
+        "A newer 6.x may exist. Android unit tests use JUnit 4 by default; running Jupiter on Android needs an extra Gradle plugin (not verified)."
+      ]
+    },
+    "junit4": {
+      "version": "4.13.2",
+      "confidence": "unverified",
+      "source": "training knowledge: last 4.x release",
+      "notes": [
+        "Use for default AGP unit tests."
+      ]
+    },
+    "turbine": {
+      "version": "unknown",
+      "confidence": "unverified",
+      "source": "not found in research",
+      "notes": [
+        "Do not assume a version. Ask the user."
+      ]
+    },
+    "truth": {
+      "version": "unknown",
+      "confidence": "unverified",
+      "source": "not found in research",
+      "notes": [
+        "Do not assume a version. Ask the user."
+      ]
+    }
+  },
+  "github_actions": {
+    "actions_checkout": {
+      "version": "v7",
+      "confidence": "medium",
+      "source": "setup-java README and renovate/dependabot PRs",
+      "notes": [
+        "v7 refuses to check out fork PRs under pull_request_target and workflow_run."
+      ]
+    },
+    "actions_setup_java": {
+      "version": "v6",
+      "confidence": "high",
+      "source": "github.com/actions/setup-java (latest v6.0.1, 2026-09-09)",
+      "released": "2026-09-09",
+      "notes": [
+        "v1 to v4 deprecated. Adopt distributions removed; use temurin. cache: gradle supported. java-version 17 is the AGP minimum."
+      ]
+    },
+    "actions_upload_artifact": {
+      "version": "v7",
+      "confidence": "medium",
+      "source": "dependabot PRs (7.0.1)"
+    },
+    "actions_download_artifact": {
+      "version": "v8",
+      "confidence": "medium",
+      "source": "renovate PR"
+    },
+    "actions_cache": {
+      "version": "v6",
+      "confidence": "medium",
+      "source": "renovate PR"
+    },
+    "gradle_actions_setup_gradle": {
+      "version": "v6 (6.4.0)",
+      "confidence": "medium",
+      "source": "dependabot PR 2026-10-02",
+      "notes": [
+        "v6 changed licensing; some projects avoid it. The open-source cache backend is selected with cache-provider: basic. Simplest safe option: skip it and use actions/setup-java with cache: gradle."
+      ]
+    },
+    "runtime_note": "Current versions run on the Node 24 runtime; Node 20 based actions are deprecated."
+  },
+  "api_notes": {
+    "kotlin_2_4": [
+      "Context parameters, explicit backing fields, and annotation use-site target features are stable in 2.4.0.",
+      "kotlin.uuid.Uuid is stable. @IntroducedAt generates version-based overloads.",
+      "when expressions compile via invokedynamic on JVM 21+ by default (stable in 2.4.20).",
+      "Experimental in 2.4.20 (need opt-in): allDistinct/allEqual families (ExperimentalStdlibApi), lazy-message kotlin.test overloads (ExperimentalKotlinTestApi), StackTraceRecoverable (ExperimentalStdlibCoroutineSupportApi).",
+      "Kotlin 2.5.0 (Beta1) adds experimental companion blocks; do not generate code that depends on them."
+    ],
+    "kotlin_2_4_confidence": "high",
+    "kotlin_2_4_source": "kotlinlang.org/docs/whatsnew24.html and whatsnew2420.html"
+  },
+  "recommended_default_stack": {
+    "note": "Opinion for a typical single-module app, assembled from the verified versions above. Not a fact claim.",
+    "ui": "Jetpack Compose via BOM 2026.09.00 + Material3 1.4.0 (stable)",
+    "navigation": "Navigation Compose 2.10.2 with @Serializable routes",
+    "state": "ViewModel + StateFlow + collectAsStateWithLifecycle()",
+    "persistence": "Room 2.8.5 (KSP) and/or DataStore 1.2.1",
+    "networking": "Ktor 3.6.0 with the OkHttp engine, or Retrofit 3.0.0 + OkHttp",
+    "images": "Coil 3.6.1 with coil-network-okhttp",
+    "di": "Hilt 2.60.1 with KSP, or manual constructor injection for small apps",
+    "serialization": "kotlinx.serialization 1.11.0",
+    "async": "kotlinx.coroutines 1.11.0",
+    "tests": "JUnit 4 + MockK 1.14.11 + kotlinx-coroutines-test on the JVM; Robolectric 4.17 only if Android classes are required"
+  },
+  "blind_build_playbook": {
+    "problem": "The code-writing model cannot compile or run anything. CI becomes the compiler and the user relays output.",
+    "steps": [
+      "Commit gradlew, gradlew.bat, gradle/wrapper/gradle-wrapper.properties and gradle-wrapper.jar. The jar is binary; a text-only generator cannot produce it. If the wrapper is missing, have CI use gradle/actions/setup-gradle with a pinned gradle-version (9.7.1) and run gradle wrapper once, or let the user generate it locally.",
+      "Pin distributionUrl in gradle-wrapper.properties to gradle-9.7.1-bin.zip.",
+      "Accept SDK licenses and make sure platform 37 is available on the runner (sdkmanager \"platforms;android-37\") if AGP cannot auto-download it.",
+      "Build in small pieces and feed full Gradle errors back verbatim.",
+      "First CI failure is most likely a dependency resolution or plugin DSL error: check the medium/unverified entries first."
+    ],
+    "confidence": "medium",
+    "note": "Wrapper and SDK-license details come from general Gradle/CI practice, not from a source fetched this session."
+  },
+  "github_workflow_yaml": "name: Android CI\non:\n  push:\n  pull_request:\njobs:\n  build:\n    runs-on: ubuntu-latest\n    steps:\n      - uses: actions/checkout@v7\n      - uses: actions/setup-java@v6\n        with:\n          distribution: temurin\n          java-version: '17'\n          cache: gradle\n      - run: chmod +x gradlew\n      - run: ./gradlew assembleDebug testDebugUnitTest lintDebug --stacktrace\n      - uses: actions/upload-artifact@v7\n        if: always()\n        with:\n          name: debug-apk\n          path: app/build/outputs/apk/debug/*.apk\n      - uses: actions/upload-artifact@v7\n        if: failure()\n        with:\n          name: build-reports\n          path: |\n            **/build/reports/**\n            **/build/test-results/**\n",
+  "version_catalog_toml": "[versions]\nagp = \"9.4.0\"\nkotlin = \"2.4.20\"\nksp = \"2.3.12\"\nhilt = \"2.60.1\"\ncomposeBom = \"2026.09.00\"\nactivityCompose = \"1.13.0\"\ncoreKtx = \"1.19.1\"\nappcompat = \"1.8.0\"\nlifecycle = \"2.11.0\"\nnavigationCompose = \"2.10.2\"\nnavigation3 = \"1.2.0\"\nroom = \"2.8.5\"\ndatastore = \"1.2.1\"\nwork = \"2.12.0\"\nhiltAndroidx = \"1.4.0\"\npaging = \"3.5.1\"\ncoreSplashscreen = \"1.2.0\"\nmaterial3Adaptive = \"1.3.0\"\ncoroutines = \"1.11.0\"\nserialization = \"1.11.0\"\ndatetime = \"0.8.0\"\nretrofit = \"3.0.0\"\nokhttp = \"5.5.0\"\nktor = \"3.6.0\"\ncoil = \"3.6.1\"\nkoin = \"4.2.1\"\nmockk = \"1.14.11\"\nrobolectric = \"4.17\"\nandroidxTestRunner = \"1.7.0\"\nandroidxTestExtJunit = \"1.3.0\"\nespresso = \"3.7.0\"\n\n[libraries]\nandroidx-compose-bom = { group = \"androidx.compose\", name = \"compose-bom\", version.ref = \"composeBom\" }\nandroidx-compose-ui = { group = \"androidx.compose.ui\", name = \"ui\" }\nandroidx-compose-ui-graphics = { group = \"androidx.compose.ui\", name = \"ui-graphics\" }\nandroidx-compose-ui-tooling = { group = \"androidx.compose.ui\", name = \"ui-tooling\" }\nandroidx-compose-ui-tooling-preview = { group = \"androidx.compose.ui\", name = \"ui-tooling-preview\" }\nandroidx-compose-ui-test-junit4 = { group = \"androidx.compose.ui\", name = \"ui-test-junit4\" }\nandroidx-compose-ui-test-manifest = { group = \"androidx.compose.ui\", name = \"ui-test-manifest\" }\nandroidx-compose-foundation = { group = \"androidx.compose.foundation\", name = \"foundation\" }\nandroidx-compose-animation = { group = \"androidx.compose.animation\", name = \"animation\" }\nandroidx-compose-material3 = { group = \"androidx.compose.material3\", name = \"material3\" }\nandroidx-compose-material3-adaptive = { group = \"androidx.compose.material3.adaptive\", name = \"adaptive\", version.ref = \"material3Adaptive\" }\nandroidx-activity-compose = { group = \"androidx.activity\", name = \"activity-compose\", version.ref = \"activityCompose\" }\nandroidx-core-ktx = { group = \"androidx.core\", name = \"core-ktx\", version.ref = \"coreKtx\" }\nandroidx-core-splashscreen = { group = \"androidx.core\", name = \"core-splashscreen\", version.ref = \"coreSplashscreen\" }\nandroidx-appcompat = { group = \"androidx.appcompat\", name = \"appcompat\", version.ref = \"appcompat\" }\nandroidx-lifecycle-runtime-compose = { group = \"androidx.lifecycle\", name = \"lifecycle-runtime-compose\", version.ref = \"lifecycle\" }\nandroidx-lifecycle-viewmodel-compose = { group = \"androidx.lifecycle\", name = \"lifecycle-viewmodel-compose\", version.ref = \"lifecycle\" }\nandroidx-navigation-compose = { group = \"androidx.navigation\", name = \"navigation-compose\", version.ref = \"navigationCompose\" }\nandroidx-navigation3-runtime = { group = \"androidx.navigation3\", name = \"navigation3-runtime\", version.ref = \"navigation3\" }\nandroidx-navigation3-ui = { group = \"androidx.navigation3\", name = \"navigation3-ui\", version.ref = \"navigation3\" }\nandroidx-room-runtime = { group = \"androidx.room\", name = \"room-runtime\", version.ref = \"room\" }\nandroidx-room-ktx = { group = \"androidx.room\", name = \"room-ktx\", version.ref = \"room\" }\nandroidx-room-compiler = { group = \"androidx.room\", name = \"room-compiler\", version.ref = \"room\" }\nandroidx-datastore-preferences = { group = \"androidx.datastore\", name = \"datastore-preferences\", version.ref = \"datastore\" }\nandroidx-work-runtime-ktx = { group = \"androidx.work\", name = \"work-runtime-ktx\", version.ref = \"work\" }\nandroidx-paging-compose = { group = \"androidx.paging\", name = \"paging-compose\", version.ref = \"paging\" }\nandroidx-hilt-navigation-compose = { group = \"androidx.hilt\", name = \"hilt-navigation-compose\", version.ref = \"hiltAndroidx\" }\nhilt-android = { group = \"com.google.dagger\", name = \"hilt-android\", version.ref = \"hilt\" }\nhilt-compiler = { group = \"com.google.dagger\", name = \"hilt-compiler\", version.ref = \"hilt\" }\nkotlinx-coroutines-android = { group = \"org.jetbrains.kotlinx\", name = \"kotlinx-coroutines-android\", version.ref = \"coroutines\" }\nkotlinx-coroutines-test = { group = \"org.jetbrains.kotlinx\", name = \"kotlinx-coroutines-test\", version.ref = \"coroutines\" }\nkotlinx-serialization-json = { group = \"org.jetbrains.kotlinx\", name = \"kotlinx-serialization-json\", version.ref = \"serialization\" }\nkotlinx-datetime = { group = \"org.jetbrains.kotlinx\", name = \"kotlinx-datetime\", version.ref = \"datetime\" }\nretrofit = { group = \"com.squareup.retrofit2\", name = \"retrofit\", version.ref = \"retrofit\" }\nokhttp = { group = \"com.squareup.okhttp3\", name = \"okhttp\", version.ref = \"okhttp\" }\nokhttp-logging-interceptor = { group = \"com.squareup.okhttp3\", name = \"logging-interceptor\", version.ref = \"okhttp\" }\nokhttp-mockwebserver = { group = \"com.squareup.okhttp3\", name = \"mockwebserver\", version.ref = \"okhttp\" }\nktor-client-core = { group = \"io.ktor\", name = \"ktor-client-core\", version.ref = \"ktor\" }\nktor-client-okhttp = { group = \"io.ktor\", name = \"ktor-client-okhttp\", version.ref = \"ktor\" }\nktor-client-content-negotiation = { group = \"io.ktor\", name = \"ktor-client-content-negotiation\", version.ref = \"ktor\" }\nktor-serialization-kotlinx-json = { group = \"io.ktor\", name = \"ktor-serialization-kotlinx-json\", version.ref = \"ktor\" }\nktor-client-logging = { group = \"io.ktor\", name = \"ktor-client-logging\", version.ref = \"ktor\" }\ncoil-compose = { group = \"io.coil-kt.coil3\", name = \"coil-compose\", version.ref = \"coil\" }\ncoil-network-okhttp = { group = \"io.coil-kt.coil3\", name = \"coil-network-okhttp\", version.ref = \"coil\" }\nkoin-core = { group = \"io.insert-koin\", name = \"koin-core\", version.ref = \"koin\" }\nmockk = { group = \"io.mockk\", name = \"mockk\", version.ref = \"mockk\" }\nrobolectric = { group = \"org.robolectric\", name = \"robolectric\", version.ref = \"robolectric\" }\nandroidx-test-runner = { group = \"androidx.test\", name = \"runner\", version.ref = \"androidxTestRunner\" }\nandroidx-test-ext-junit = { group = \"androidx.test.ext\", name = \"junit\", version.ref = \"androidxTestExtJunit\" }\nandroidx-test-espresso-core = { group = \"androidx.test.espresso\", name = \"espresso-core\", version.ref = \"espresso\" }\n\n[plugins]\nandroid-application = { id = \"com.android.application\", version.ref = \"agp\" }\nandroid-library = { id = \"com.android.library\", version.ref = \"agp\" }\nkotlin-compose = { id = \"org.jetbrains.kotlin.plugin.compose\", version.ref = \"kotlin\" }\nkotlin-serialization = { id = \"org.jetbrains.kotlin.plugin.serialization\", version.ref = \"kotlin\" }\nksp = { id = \"com.google.devtools.ksp\", version.ref = \"ksp\" }\nhilt = { id = \"com.google.dagger.hilt.android\", version.ref = \"hilt\" }\n",
+  "not_verified_do_not_guess": [
+    "Turbine version",
+    "Google Truth version",
+    "JUnit 5/6 on Android plugin version",
+    "OkHttp 5 with Retrofit 3 compatibility",
+    "Exact Room 3 (androidx.room3) API",
+    "Koin newer than 4.2.1",
+    "Coil release date for 3.6.1",
+    "Retrofit 3.0.0 and OkHttp 5.5.0 release dates",
+    "Gradle 9.8.0 stability",
+    "AGP 9.4 patch versions",
+    "kotlinOptions removal details",
+    "Firebase BOM, Google Play Services, Maps, ML Kit, Billing, Play Integrity versions",
+    "Accompanist, Timber, Lottie, Moshi, Gson, Landscapist and other third-party library versions"
+  ],
+  "sources": [
+    "kotlinlang.org/docs/releases.html",
+    "kotlinlang.org/docs/whatsnew2420.html",
+    "kotlinlang.org/docs/whatsnew24.html",
+    "developer.android.com/build/releases/agp-9-4-0-release-notes",
+    "developer.android.com/build/releases/agp-9-3-0-release-notes",
+    "developer.android.com/build/releases/agp-9-2-0-release-notes",
+    "developer.android.com/build/releases/agp-9-0-0-release-notes",
+    "developer.android.com/studio/releases",
+    "developer.android.com/jetpack/androidx/versions/stable-channel",
+    "developer.android.com/jetpack/compose/bom",
+    "developer.android.com/google/play/requirements/target-sdk",
+    "android-developers.googleblog.com/2026/08/jetpack-compose-august-2026-release.html",
+    "github.com/google/ksp/releases",
+    "github.com/gradle/gradle-distributions/releases",
+    "github.com/ktorio/ktor/releases",
+    "github.com/lysine-dev/retrofit/releases",
+    "github.com/robolectric/robolectric/releases",
+    "github.com/actions/setup-java/releases",
+    "github.com/Kotlin/kotlinx-datetime/releases",
+    "mvnrepository.com/artifact/io.mockk/mockk",
+    "mvnrepository.com/artifact/androidx.compose/compose-bom",
+    "github.com/coil-kt/coil/issues/3530",
+    "klibs.io (koin, kotlinx-serialization)",
+    "github.com/google/dagger release notes via dependabot PRs"
+  ]
+}

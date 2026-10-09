@@ -1,0 +1,42 @@
+package app.tacit.calc
+
+object Cities {
+    val zones: Map<String, String> = mapOf(
+        "cairo" to "Africa/Cairo", "alexandria" to "Africa/Cairo", "egypt" to "Africa/Cairo",
+        "london" to "Europe/London", "uk" to "Europe/London", "dublin" to "Europe/Dublin",
+        "paris" to "Europe/Paris", "berlin" to "Europe/Berlin", "madrid" to "Europe/Madrid",
+        "rome" to "Europe/Rome", "amsterdam" to "Europe/Amsterdam", "brussels" to "Europe/Brussels",
+        "vienna" to "Europe/Vienna", "zurich" to "Europe/Zurich", "stockholm" to "Europe/Stockholm",
+        "oslo" to "Europe/Oslo", "copenhagen" to "Europe/Copenhagen", "helsinki" to "Europe/Helsinki",
+        "warsaw" to "Europe/Warsaw", "prague" to "Europe/Prague", "athens" to "Europe/Athens",
+        "istanbul" to "Europe/Istanbul", "moscow" to "Europe/Moscow", "kyiv" to "Europe/Kyiv",
+        "lisbon" to "Europe/Lisbon", "riyadh" to "Asia/Riyadh", "jeddah" to "Asia/Riyadh",
+        "mecca" to "Asia/Riyadh", "dubai" to "Asia/Dubai", "abu dhabi" to "Asia/Dubai",
+        "doha" to "Asia/Qatar", "kuwait" to "Asia/Kuwait", "manama" to "Asia/Bahrain",
+        "muscat" to "Asia/Muscat", "amman" to "Asia/Amman", "beirut" to "Asia/Beirut",
+        "damascus" to "Asia/Damascus", "baghdad" to "Asia/Baghdad", "jerusalem" to "Asia/Jerusalem",
+        "gaza" to "Asia/Gaza", "tehran" to "Asia/Tehran", "karachi" to "Asia/Karachi",
+        "delhi" to "Asia/Kolkata", "mumbai" to "Asia/Kolkata", "india" to "Asia/Kolkata",
+        "dhaka" to "Asia/Dhaka", "bangkok" to "Asia/Bangkok", "jakarta" to "Asia/Jakarta",
+        "singapore" to "Asia/Singapore", "kuala lumpur" to "Asia/Kuala_Lumpur",
+        "hong kong" to "Asia/Hong_Kong", "beijing" to "Asia/Shanghai", "shanghai" to "Asia/Shanghai",
+        "taipei" to "Asia/Taipei", "seoul" to "Asia/Seoul", "tokyo" to "Asia/Tokyo",
+        "japan" to "Asia/Tokyo", "manila" to "Asia/Manila", "sydney" to "Australia/Sydney",
+        "melbourne" to "Australia/Melbourne", "perth" to "Australia/Perth",
+        "auckland" to "Pacific/Auckland", "honolulu" to "Pacific/Honolulu",
+        "los angeles" to "America/Los_Angeles", "la" to "America/Los_Angeles",
+        "san francisco" to "America/Los_Angeles", "sf" to "America/Los_Angeles",
+        "seattle" to "America/Los_Angeles", "vancouver" to "America/Vancouver",
+        "denver" to "America/Denver", "phoenix" to "America/Phoenix", "chicago" to "America/Chicago",
+        "dallas" to "America/Chicago", "houston" to "America/Chicago", "mexico city" to "America/Mexico_City",
+        "new york" to "America/New_York", "nyc" to "America/New_York", "ny" to "America/New_York",
+        "boston" to "America/New_York", "miami" to "America/New_York", "washington" to "America/New_York",
+        "toronto" to "America/Toronto", "montreal" to "America/Toronto", "sao paulo" to "America/Sao_Paulo",
+        "buenos aires" to "America/Argentina/Buenos_Aires", "bogota" to "America/Bogota",
+        "lima" to "America/Lima", "santiago" to "America/Santiago", "casablanca" to "Africa/Casablanca",
+        "tunis" to "Africa/Tunis", "algiers" to "Africa/Algiers", "tripoli" to "Africa/Tripoli",
+        "khartoum" to "Africa/Khartoum", "lagos" to "Africa/Lagos", "nairobi" to "Africa/Nairobi",
+        "johannesburg" to "Africa/Johannesburg", "addis ababa" to "Africa/Addis_Ababa",
+        "utc" to "UTC", "gmt" to "GMT"
+    )
+}

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_label">بحث Tacit</string>
+    <string name="search_hint">بحث</string>
+    <string name="settings">الإعدادات</string>
+    <string name="copied">تم النسخ</string>
+    <string name="hidden_clip">حساس، مخفي</string>
+
+    <string name="action_call">اتصال</string>
+    <string name="action_message">رسالة</string>
+    <string name="action_whatsapp">واتساب</string>
+    <string name="action_whatsapp_business">واتساب للأعمال</string>
+
+    <string name="menu_alias">الأسماء المستعارة</string>
+    <string name="menu_pin">تثبيت</string>
+    <string name="menu_unpin">إلغاء التثبيت</string>
+    <string name="menu_app_info">معلومات التطبيق</string>
+    <string name="menu_notifications">الإشعارات</string>
+    <string name="menu_uninstall">إزالة</string>
+    <string name="menu_hide">إخفاء</string>
+    <string name="menu_open_contact">فتح جهة الاتصال</string>
+    <string name="menu_share">مشاركة</string>
+    <string name="menu_open_folder">فتح المجلد</string>
+    <string name="menu_copy_path">نسخ المسار</string>
+    <string name="menu_save_snippet">حفظ كمقتطف</string>
+    <string name="menu_delete">حذف</string>
+    <string name="menu_edit">تعديل</string>
+    <string name="menu_copy">نسخ</string>
+
+    <string name="alias_hint">أسماء مستعارة، مفصولة بفواصل</string>
+    <string name="alias_hint_short">اسم، اسم</string>
+    <string name="aliases_for">الأسماء المستعارة لـ %1$s</string>
+    <string name="save">حفظ</string>
+    <string name="cancel">إلغاء</string>
+    <string name="ok">حسنًا</string>
+    <string name="add">إضافة</string>
+
+    <string name="aliases">الأسماء المستعارة</string>
+    <string name="cat_apps">التطبيقات</string>
+    <string name="cat_contacts">جهات الاتصال</string>
+    <string name="cat_settings">الإعدادات</string>
+    <string name="cat_snippets">المقتطفات</string>
+    <string name="cat_shortcuts">الاختصارات</string>
+    <string name="filter">تصفية</string>
+    <string name="fill_initials">ملء بالأحرف الأولى</string>
+    <string name="export_csv">تصدير CSV</string>
+    <string name="import_csv">استيراد CSV</string>
+    <string name="col_item">العنصر</string>
+    <string name="col_aliases">الأسماء المستعارة</string>
+    <string name="shared_aliases">مشتركة: %1$s</string>
+    <string name="imported_rows">تم استيراد %1$d صف</string>
+
+    <string name="snippets">المقتطفات</string>
+    <string name="snippet_trigger">الاختصار</string>
+    <string name="snippet_title">العنوان</string>
+    <string name="snippet_body">النص</string>
+
+    <string name="sec_look">المظهر</string>
+    <string name="theme">السمة</string>
+    <string name="theme_system">حسب النظام</string>
+    <string name="theme_dark">أسود</string>
+    <string name="theme_light">أبيض</string>
+    <string name="icons">الأيقونات</string>
+    <string name="icons_mono">أحادية اللون</string>
+    <string name="icons_color">ملونة</string>
+    <string name="icons_none">نص فقط</string>
+    <string name="bar_bottom">شريط البحث في الأسفل</string>
+    <string name="show_clock">الساعة</string>
+    <string name="show_date">التاريخ</string>
+    <string name="wallpaper">الخلفية</string>
+    <string name="result_count">عدد النتائج</string>
+    <string name="unlimited">بلا حد</string>
+
+    <string name="sec_sources">المصادر</string>
+    <string name="contacts">جهات الاتصال</string>
+    <string name="files">الملفات</string>
+    <string name="files_hidden">الملفات المخفية</string>
+    <string name="rescan_files">إعادة فهرسة الملفات (%1$d مفهرس)</string>
+    <string name="files_permission_explain">الوصول إلى كل الملفات يبحث في كل شيء عدا Android/data و Android/obb. أو اختر مجلدات محددة بدلًا من ذلك.</string>
+    <string name="clipboard">سجل الحافظة</string>
+    <string name="clipboard_limit">يسمح أندرويد لـ Tacit بقراءة الحافظة فقط أثناء فتحه. ما يُنسخ بين المرات لا يُحفظ.</string>
+    <string name="clip_days">الاحتفاظ بالأيام (0 = للأبد)</string>
+    <string name="clip_max">الاحتفاظ بالعناصر (0 = بلا حد)</string>
+    <string name="sensitive_policy">العناصر الحساسة</string>
+    <string name="sensitive_skip">لا تحفظ أبدًا</string>
+    <string name="sensitive_expire">احذف بعد دقيقة</string>
+    <string name="sensitive_hide">احفظ مع إخفاء المعاينة</string>
+    <string name="clear_clipboard">مسح سجل الحافظة</string>
+    <string name="clear_clipboard_confirm">حذف كل سجل الحافظة؟</string>
+
+    <string name="sec_search">البحث</string>
+    <string name="fuzzy">تحمّل الأخطاء الإملائية</string>
+    <string name="fuzzy_off">إيقاف</string>
+    <string name="fuzzy_normal">عادي</string>
+    <string name="fuzzy_loose">متساهل</string>
+    <string name="transliterate">مطابقة العربية ↔ اللاتينية</string>
+    <string name="visible_password">إدخال صارم بلا تصحيح تلقائي</string>
+    <string name="starred_pins">جهات الاتصال المميزة كمثبتة</string>
+    <string name="kind_order">ترتيب الأنواع</string>
+    <string name="hidden_items">المخفية (%1$d)</string>
+    <string name="hidden_title">المخفية</string>
+
+    <string name="sec_actions">الإجراءات</string>
+    <string name="country_code">رمز الدولة الافتراضي</string>
+    <string name="direct_call">اتصال دون تطبيق الهاتف</string>
+    <string name="default_engine">بادئة محرك البحث الافتراضي</string>
+    <string name="engines" formatted="false">محركات البحث (بادئة|اسم|رابط يحتوي %s)</string>
+    <string name="close_after">مسح البحث بعد الفتح</string>
+    <string name="exclude_recents">إخفاء من التطبيقات الأخيرة</string>
+    <string name="precision">دقة الآلة الحاسبة</string>
+
+    <string name="sec_prefixes">البادئات</string>
+    <string name="p_calc">الآلة الحاسبة</string>
+    <string name="p_clip">الحافظة</string>
+    <string name="p_settings">الإعدادات</string>
+    <string name="p_contacts">جهات الاتصال</string>
+    <string name="p_files">الملفات</string>
+    <string name="p_snippets">المقتطفات</string>
+
+    <string name="sec_system">النظام</string>
+    <string name="set_home">تطبيق الشاشة الرئيسية</string>
+    <string name="set_assistant">التطبيقات الافتراضية</string>
+    <string name="keys">المفاتيح</string>
+    <string name="keys_body">Enter  فتح النتيجة الأولى\n↑ ↓  تنقل\nTab  إجراءات أخرى\nEsc  مسح ثم إغلاق\nضغط مطوّل  إجراءات أخرى\n\n%1$s  الآلة الحاسبة\n%2$s ⎵  الحافظة\n%3$s  الإعدادات\n%4$s  جهات الاتصال\n%5$s  الملفات\n%6$s  المقتطفات\next:pdf  in:download  مرشحات الملفات\n\n%7$s</string>
+    <string name="export_all">تصدير كل شيء</string>
+    <string name="import_all">استيراد</string>
+    <string name="share_crash">مشاركة آخر عطل</string>
+    <string name="rebuild_index">إعادة بناء الفهرس</string>
+    <string name="about_line">Tacit. بلا إنترنت. بلا تتبع. GPL-3.0.</string>
+
+    <string name="files_all_access">الوصول إلى كل الملفات</string>
+    <string name="files_choose_folders">اختيار مجلدات</string>
+    <string name="files_mode_all">البحث في كل مساحة التخزين المشتركة.</string>
+    <string name="files_mode_folders">البحث في المجلدات التي اخترتها فقط. لا يسمح أندرويد باختيار جذر التخزين أو مجلد التنزيلات بهذه الطريقة.</string>
+    <string name="files_folder_item">مجلد: %1$s</string>
+    <string name="files_folder_remove">إيقاف البحث في %1$s؟</string>
+    <string name="files_add_folder">إضافة مجلد</string>
+    <string name="clip_biometric">قفل الحافظة بالبصمة أو قفل الشاشة</string>
+    <string name="clip_biometric_unavailable">فعّل قفل الشاشة لتتمكن من قفل الحافظة.</string>
+    <string name="clip_locked">الحافظة مقفلة</string>
+    <string name="clip_locked_hint">اضغط لفتح القفل</string>
+    <string name="clip_unlock_title">فتح قفل الحافظة</string>
+
+    <string name="shortcut_settings">الإعدادات</string>
+    <string name="shortcut_aliases">الأسماء المستعارة</string>
+</resources>

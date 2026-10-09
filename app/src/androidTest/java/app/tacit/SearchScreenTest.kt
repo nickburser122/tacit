@@ -25,6 +25,7 @@ import app.tacit.core.SearchItem
 import app.tacit.fixtures.Fixtures
 import app.tacit.ui.SearchActivity
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.hasToString
 import org.hamcrest.Matchers.startsWith
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -131,7 +132,7 @@ class SearchScreenTest {
     fun enterOnWebRowOpensBrowser() {
         type("ddg tacit launcher")
         onView(withId(R.id.search_input)).perform(pressImeActionButton())
-        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(startsWith("https://duckduckgo.com/?q=tacit"))))
+        intended(allOf(hasAction(Intent.ACTION_VIEW), hasData(hasToString(startsWith("https://duckduckgo.com/?q=tacit")))))
     }
 
     @Test

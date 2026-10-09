@@ -27,12 +27,32 @@ jobs:
           set -o pipefail
           ./gradlew assembleDebug testDebugUnitTest lintDebug --stacktrace --continue 2>&1 | tee build.log
 
+      - name: Device tests compile
+        if: always()
+        run: |
+          set -o pipefail
+          ./gradlew assembleDebugAndroidTest --stacktrace --continue 2>&1 | tee build-androidtest.log
+
+      - name: Release build
+        if: always()
+        run: |
+          set -o pipefail
+          ./gradlew assembleRelease --stacktrace --continue 2>&1 | tee build-release.log
+
+      - name: Benchmark module
+        if: always()
+        run: |
+          set -o pipefail
+          ./gradlew :benchmark:assembleBenchmark --stacktrace --continue 2>&1 | tee build-benchmark.log
+
       - name: Show errors
         if: failure()
         run: |
-          {
-            grep -nE '^e: |error:|FAILED|What went wrong|Caused by|Execution failed|Could not|AssertionError|Exception|expected|at app\.tacit|Test' build.log | grep -v 'Task :' | head -150
-          } > errors.txt || true
+          for f in build.log build-androidtest.log build-release.log build-benchmark.log; do
+            [ -f "$f" ] || continue
+            echo "=== $f ==="
+            grep -nE '^e: |error:|FAILED|What went wrong|Caused by|Execution failed|Could not|AssertionError|expected|at app\.tacit|Test|> ' "$f" | grep -v 'Task :' | head -60
+          done > errors.txt || true
           msg=$(head -c 30000 errors.txt)
           msg="${msg//'%'/'%25'}"
           msg="${msg//$'\r'/'%0D'}"
@@ -45,7 +65,7 @@ jobs:
         with:
           name: build-log
           path: |
-            build.log
+            build*.log
             app/build/reports/**
             app/build/test-results/**
 
@@ -55,3 +75,10 @@ jobs:
         with:
           name: tacit-debug-apk
           path: app/build/outputs/apk/debug/*.apk
+
+      - name: Upload release APK
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tacit-release-apk-unsigned
+          path: app/build/outputs/apk/release/*.apk

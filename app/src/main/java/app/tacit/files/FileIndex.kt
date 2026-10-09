@@ -46,7 +46,7 @@ class FileTable(
 
     fun pathOf(index: Int): String {
         val name = names[index]
-        TreeScanner.documentUri(name)?.let { return it.toString() }
+        TreeScanner.documentUriString(name)?.let { return it }
         return directories[parent[index]] + "/" + name
     }
 

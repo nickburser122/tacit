@@ -90,8 +90,10 @@ class TreeScanner(
 
         fun displayName(stored: String): String = stored.substringBefore(TREE_SEPARATOR)
 
-        fun documentUri(stored: String): Uri? =
-            if (stored.contains(TREE_SEPARATOR)) Uri.parse(stored.substringAfter(TREE_SEPARATOR)) else null
+        fun documentUriString(stored: String): String? =
+            if (stored.contains(TREE_SEPARATOR)) stored.substringAfter(TREE_SEPARATOR) else null
+
+        fun documentUri(stored: String): Uri? = documentUriString(stored)?.let { Uri.parse(it) }
 
         fun normalizedName(stored: String): String = Normalizer.normalize(displayName(stored))
     }

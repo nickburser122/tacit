@@ -26,10 +26,14 @@ class KeystrokeBudgetTest {
     @Test
     fun fixturesStillFindNamedTargets() {
         val engine = engineWithFixtures()
-        assertTrue(engine.search("gos", 8).any { it.item.label == "Asmaa Gouda" })
-        assertTrue(engine.search("asmaa", 8).any { it.item.label == "أسماء جودة" })
-        assertTrue(engine.search("zoe", 8).any { it.item.label == "Zoë Müller" })
-        assertTrue(engine.search("yt", 8).first().item.label == "YouTube")
+        val expected = listOf("gos" to "Asmaa Gouda", "asmaa" to "أسماء جودة", "zoe" to "Zoë Müller", "yt" to "YouTube")
+        val failures = ArrayList<String>()
+        for ((query, label) in expected) {
+            val results = engine.search(query, 8)
+            val ok = if (query == "yt") results.firstOrNull()?.item?.label == label else results.any { it.item.label == label }
+            if (!ok) failures.add(query + " -> " + results.joinToString { it.item.label + "@" + it.score })
+        }
+        assertTrue(failures.joinToString(" | "), failures.isEmpty())
     }
 
     @Test

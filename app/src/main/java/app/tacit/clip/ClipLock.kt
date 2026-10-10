@@ -43,18 +43,20 @@ class ClipLock(private val activity: Activity, private val prefs: Prefs, private
             @Suppress("DEPRECATION")
             builder.setDeviceCredentialAllowed(true)
         }
-        val prompt = builder.build()
-        prompt.authenticate(signal, activity.mainExecutor, object : BiometricPrompt.AuthenticationCallback() {
-            override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
-                prompting = false
-                unlocked = true
-                onUnlocked()
-            }
+        val started = runCatching {
+            builder.build().authenticate(signal, activity.mainExecutor, object : BiometricPrompt.AuthenticationCallback() {
+                override fun onAuthenticationSucceeded(result: BiometricPrompt.AuthenticationResult?) {
+                    prompting = false
+                    unlocked = true
+                    onUnlocked()
+                }
 
-            override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
-                prompting = false
-            }
-        })
+                override fun onAuthenticationError(errorCode: Int, errString: CharSequence?) {
+                    prompting = false
+                }
+            })
+        }
+        if (started.isFailure) prompting = false
     }
 
     companion object {
@@ -66,13 +68,13 @@ class ClipLock(private val activity: Activity, private val prefs: Prefs, private
                 BiometricManager.Authenticators.BIOMETRIC_WEAK or BiometricManager.Authenticators.DEVICE_CREDENTIAL
             } else 0
 
-        fun canAuthenticate(activity: Activity): Boolean {
+        fun canAuthenticate(activity: Activity): Boolean = runCatching {
             if (Build.VERSION.SDK_INT >= 30) {
-                val manager = activity.getSystemService(BiometricManager::class.java) ?: return false
-                return manager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS
+                val manager = activity.getSystemService(BiometricManager::class.java)
+                manager != null && manager.canAuthenticate(AUTHENTICATORS) == BiometricManager.BIOMETRIC_SUCCESS
+            } else {
+                activity.getSystemService(KeyguardManager::class.java)?.isDeviceSecure == true
             }
-            val keyguard = activity.getSystemService(KeyguardManager::class.java) ?: return false
-            return keyguard.isDeviceSecure
-        }
+        }.getOrDefault(false)
     }
 }

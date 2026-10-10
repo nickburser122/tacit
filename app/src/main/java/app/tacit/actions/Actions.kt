@@ -13,6 +13,7 @@ import android.provider.ContactsContract
 import android.provider.DocumentsContract
 import android.webkit.MimeTypeMap
 import app.tacit.Graph
+import app.tacit.TacitApp
 import app.tacit.core.ItemKind
 import app.tacit.core.SearchItem
 import app.tacit.core.WebEngine
@@ -61,9 +62,16 @@ object Actions {
                 Graph.clipboard.copy(payload.removePrefix("copy|"), false)
                 true
             }
+            payload == "crash|share" -> shareCrash(activity)
             payload.startsWith("tacit|") -> start(activity, Intent(activity, Class.forName(payload.removePrefix("tacit|"))))
             else -> false
         }
+    }
+
+    private fun shareCrash(activity: Activity): Boolean {
+        val text = runCatching { File(activity.filesDir, TacitApp.CRASH_FILE).readText() }.getOrNull() ?: return false
+        val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text)
+        return start(activity, Intent.createChooser(send, null))
     }
 
     fun openContact(activity: Activity, item: SearchItem): Boolean {

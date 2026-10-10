@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+adb logcat -c
+./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="$1" --stacktrace > device-tests.log 2>&1
+status=$?
+adb logcat -d -v threadtime > logcat.txt
+{
+  echo "exit status: $status"
+  echo "--- crash in logcat"
+  grep -n -A45 "FATAL EXCEPTION" logcat.txt | head -150
+  echo "--- instrumentation output"
+  grep -nE "Process crashed|FAILED|AssertionError|Exception|Tests on|tests completed|> Task :app:connected" device-tests.log | head -60
+} > device-summary.txt
+msg=$(head -c 30000 device-summary.txt)
+msg="${msg//'%'/'%25'}"
+msg="${msg//$'\r'/'%0D'}"
+msg="${msg//$'\n'/'%0A'}"
+if [ "$status" -eq 0 ]; then
+  echo "::notice title=Device tests passed::$msg"
+else
+  echo "::error title=Device tests failed::$msg"
+fi
+exit "$status"

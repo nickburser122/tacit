@@ -27,6 +27,7 @@ import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import app.tacit.Graph
 import app.tacit.R
+import app.tacit.TacitApp
 import app.tacit.actions.Actions
 import app.tacit.clip.ClipLock
 import app.tacit.core.ComposeInput
@@ -309,7 +310,7 @@ class SearchActivity : Activity(), RowCallbacks {
         val limit = Graph.prefs.resultCount.coerceIn(3, 30)
         val output = composer.compose(ComposeInput(raw, limit, defaultEngine(), ::clipboardItems))
         val sensitiveView = output.parsed.scope == Scope.CLIPBOARD
-        baseRows = if (sensitiveView && clipLock.isLocked()) listOf(clipLock.lockedRow()) else output.rows
+        baseRows = if (sensitiveView && clipLock.isLocked()) listOf(clipLock.lockedRow()) else crashRows(raw) + output.rows
         fileRows = emptyList()
         if (sensitiveView) window.addFlags(WindowManager.LayoutParams.FLAG_SECURE)
         else window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
@@ -328,6 +329,12 @@ class SearchActivity : Activity(), RowCallbacks {
         } else {
             Graph.files.cancel()
         }
+    }
+
+    private fun crashRows(raw: String): List<SearchItem> {
+        if (!raw.trim().equals("crash", ignoreCase = true)) return emptyList()
+        if (!File(filesDir, TacitApp.CRASH_FILE).exists()) return emptyList()
+        return listOf(SearchItem("crash", ItemKind.ACTION, getString(R.string.share_crash), "", payload = "crash|share"))
     }
 
     private fun publish() {

@@ -14,7 +14,7 @@ import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent
+import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.matcher.ViewMatchers.withId
@@ -26,6 +26,7 @@ import app.tacit.fixtures.Fixtures
 import app.tacit.ui.SearchActivity
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import org.hamcrest.Matchers.not
 import org.hamcrest.Matchers.startsWith
 import org.junit.After
 import org.junit.Assert.assertEquals
@@ -52,7 +53,7 @@ class SearchScreenTest {
         Graph.applyPrefs()
         Graph.useItemsForTesting(Fixtures.all())
         Intents.init()
-        intending(anyIntent()).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+        intending(not(isInternal())).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         scenario = ActivityScenario.launch(SearchActivity::class.java)
         InstrumentationRegistry.getInstrumentation().waitForIdleSync()
     }

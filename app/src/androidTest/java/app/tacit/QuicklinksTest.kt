@@ -14,7 +14,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intended
 import androidx.test.espresso.intent.Intents.intending
-import androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent
+import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
@@ -32,6 +32,7 @@ import app.tacit.ui.QuicklinksActivity
 import app.tacit.ui.SearchActivity
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.hasToString
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -58,7 +59,7 @@ class QuicklinksTest {
         Graph.quicklinkSource.reload()
         Graph.useItemsForTesting(Fixtures.all() + Graph.quicklinkSource.items())
         Intents.init()
-        intending(anyIntent()).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+        intending(not(isInternal())).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
     }
 
     @After

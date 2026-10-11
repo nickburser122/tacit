@@ -27,7 +27,8 @@ for cls in ${1//,/ }; do
       sleep 4
       latest=$(adb shell 'ls -t /data/anr 2>/dev/null | head -1' | tr -d '\r')
       echo "anr file: $latest"
-      adb shell "head -c 24000 /data/anr/$latest"
+      adb shell "cat /data/anr/$latest" > anr-full.txt
+      awk '/^"/{keep=($0 ~ /Instr|Test|main|Espresso/)} keep && (/^"/ || /^  at /)' anr-full.txt | head -120
     } > timeout-diagnostics.txt 2>&1
     kill "$gpid" 2>/dev/null
     wait "$gpid" 2>/dev/null
@@ -49,6 +50,8 @@ adb logcat -d -v threadtime > logcat.txt
   grep -nE "Process crashed|FAILED|AssertionError|Exception|Tests on|tests completed|> Task :app:connected" device-tests.log | head -60
   echo "--- clipboard service lines"
   grep -iE "clipboard" logcat.txt | grep -iE "deny|denied|not focused|access" | head -20
+  echo "--- activity manager events for tacit"
+  grep -E "ActivityTaskManager|ActivityManager|WindowManager" logcat.txt | grep -i "tacit" | cut -c1-220 | tail -40
   echo "--- test runner events"
   grep -E "TestRunner|AndroidJUnitRunner" logcat.txt | cut -c1-200 | tail -60
   echo "--- timeout diagnostics"

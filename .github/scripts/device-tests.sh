@@ -3,8 +3,21 @@ adb logcat -c
 status=0
 : > device-tests.log
 : > tests-ran.txt
+rm -f timeout-diagnostics.txt
 for cls in ${1//,/ }; do
-  ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="$cls" --stacktrace >> device-tests.log 2>&1 || status=1
+  timeout 420 ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="$cls" --stacktrace >> device-tests.log 2>&1
+  code=$?
+  if [ "$code" -ne 0 ]; then
+    status=1
+    if [ "$code" -eq 124 ]; then
+      echo "TIMEOUT in $cls" >> tests-ran.txt
+      adb logcat -d -v threadtime > logcat-timeout.txt
+      {
+        adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity"
+        adb shell dumpsys window windows | grep -E "mCurrentFocus|mFocusedApp"
+      } >> timeout-diagnostics.txt 2>&1
+    fi
+  fi
   find app/build/outputs/androidTest-results -name 'TEST-*.xml' 2>/dev/null | while read -r f; do
     grep -oE '<testsuite [^>]*>' "$f" | head -1
     grep -oE '<testcase [^>]*>' "$f"
@@ -20,6 +33,10 @@ adb logcat -d -v threadtime > logcat.txt
   grep -nE "Process crashed|FAILED|AssertionError|Exception|Tests on|tests completed|> Task :app:connected" device-tests.log | head -60
   echo "--- clipboard service lines"
   grep -iE "clipboard" logcat.txt | grep -iE "deny|denied|not focused|access" | head -20
+  echo "--- test runner events"
+  grep -E "TestRunner|AndroidJUnitRunner" logcat.txt | cut -c1-200 | tail -60
+  echo "--- timeout diagnostics"
+  cat timeout-diagnostics.txt 2>/dev/null
   echo "--- tests that ran"
   cat tests-ran.txt
 } > device-summary.txt

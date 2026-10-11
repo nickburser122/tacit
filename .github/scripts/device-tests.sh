@@ -5,18 +5,34 @@ status=0
 : > tests-ran.txt
 rm -f timeout-diagnostics.txt
 for cls in ${1//,/ }; do
-  timeout 420 ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="$cls" --stacktrace >> device-tests.log 2>&1
-  code=$?
-  if [ "$code" -ne 0 ]; then
+  ./gradlew connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="$cls" --stacktrace >> device-tests.log 2>&1 &
+  gpid=$!
+  waited=0
+  while kill -0 "$gpid" 2>/dev/null && [ "$waited" -lt 300 ]; do
+    sleep 5
+    waited=$((waited + 5))
+  done
+  if kill -0 "$gpid" 2>/dev/null; then
     status=1
-    if [ "$code" -eq 124 ]; then
-      echo "TIMEOUT in $cls" >> tests-ran.txt
-      adb logcat -d -v threadtime > logcat-timeout.txt
-      {
-        adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity"
-        adb shell dumpsys window windows | grep -E "mCurrentFocus|mFocusedApp"
-      } >> timeout-diagnostics.txt 2>&1
-    fi
+    echo "TIMEOUT in $cls" >> tests-ran.txt
+    pid=$(adb shell pidof app.tacit | tr -d '\r')
+    {
+      echo "app pid: $pid"
+      adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity"
+      adb shell dumpsys window windows | grep -E "mCurrentFocus|mFocusedApp"
+      adb shell kill -3 "$pid"
+      sleep 3
+      adb root
+      sleep 3
+      adb wait-for-device
+      latest=$(adb shell 'ls -t /data/anr 2>/dev/null | head -1' | tr -d '\r')
+      echo "anr file: $latest"
+      adb shell "head -c 20000 /data/anr/$latest"
+    } > timeout-diagnostics.txt 2>&1
+    kill "$gpid" 2>/dev/null
+    wait "$gpid" 2>/dev/null
+  else
+    wait "$gpid" || status=1
   fi
   find app/build/outputs/androidTest-results -name 'TEST-*.xml' 2>/dev/null | while read -r f; do
     grep -oE '<testsuite [^>]*>' "$f" | head -1

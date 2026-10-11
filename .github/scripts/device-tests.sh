@@ -15,19 +15,19 @@ for cls in ${1//,/ }; do
   if kill -0 "$gpid" 2>/dev/null; then
     status=1
     echo "TIMEOUT in $cls" >> tests-ran.txt
-    pid=$(adb shell pidof app.tacit | tr -d '\r')
     {
-      echo "app pid: $pid"
-      adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity"
-      adb shell dumpsys window windows | grep -E "mCurrentFocus|mFocusedApp"
-      adb shell kill -3 "$pid"
-      sleep 3
       adb root
       sleep 3
       adb wait-for-device
+      pid=$(adb shell pidof app.tacit | tr -d '\r')
+      echo "app pid: $pid"
+      adb shell dumpsys activity activities | grep -E "mResumedActivity|topResumedActivity|ResumedActivity"
+      adb shell dumpsys window | grep -E "mCurrentFocus|mFocusedApp|mFocusedWindow"
+      adb shell kill -3 "$pid"
+      sleep 4
       latest=$(adb shell 'ls -t /data/anr 2>/dev/null | head -1' | tr -d '\r')
       echo "anr file: $latest"
-      adb shell "head -c 20000 /data/anr/$latest"
+      adb shell "head -c 24000 /data/anr/$latest"
     } > timeout-diagnostics.txt 2>&1
     kill "$gpid" 2>/dev/null
     wait "$gpid" 2>/dev/null

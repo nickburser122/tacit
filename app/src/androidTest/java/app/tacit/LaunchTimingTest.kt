@@ -2,26 +2,24 @@ package app.tacit
 
 import android.app.Activity
 import android.app.Instrumentation
-import android.os.Handler
+import android.content.Intent
 import android.os.Looper
 import android.os.SystemClock
 import android.util.Log
 import androidx.test.core.app.ActivityScenario
-import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.intent.Intents
 import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
-import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import androidx.test.runner.lifecycle.ActivityLifecycleCallback
+import androidx.test.runner.lifecycle.ActivityLifecycleMonitorRegistry
 import app.tacit.fixtures.Fixtures
 import app.tacit.ui.SearchActivity
 import org.hamcrest.Matchers.not
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.TimeUnit
 
 @RunWith(AndroidJUnit4::class)
 class LaunchTimingTest {
@@ -32,27 +30,14 @@ class LaunchTimingTest {
         Log.i("LaunchTiming", message)
     }
 
-    private fun dumpMain(label: String) {
-        val main = Looper.getMainLooper()
-        main.thread.stackTrace.take(12).forEach { log("$label stack $it") }
-        val lines = StringBuilder()
-        main.dump({ lines.append(it).append('\n') }, "")
-        lines.lines().take(14).forEach { log("$label queue ${it.take(200)}") }
+    private fun dump(label: String) {
+        Looper.getMainLooper().thread.stackTrace.take(10).forEach { log("$label main $it") }
+        Thread.getAllStackTraces().entries
+            .filter { it.key.name.startsWith("Instr") }
+            .forEach { entry -> entry.value.take(14).forEach { log("$label ${entry.key.name} $it") } }
     }
 
-    private fun latencyMs(): Long {
-        val latch = CountDownLatch(1)
-        val start = SystemClock.elapsedRealtime()
-        var done = 0L
-        Handler(Looper.getMainLooper()).post {
-            done = SystemClock.elapsedRealtime()
-            latch.countDown()
-        }
-        latch.await(10, TimeUnit.SECONDS)
-        return if (done == 0L) -1L else done - start
-    }
-
-    private fun measure(label: String, intents: Boolean, items: Boolean, type: Boolean, stub: Int = 0) {
+    private fun run(label: String, stub: Int, releaseBeforeClose: Boolean) {
         Graph.prefs.store.edit().clear().commit()
         Graph.prefs.barAtBottom = false
         Graph.prefs.closeAfterAction = false
@@ -60,58 +45,49 @@ class LaunchTimingTest {
         Graph.prefs.clipboardEnabled = false
         Graph.prefs.resultCount = 8
         Graph.applyPrefs()
-        if (items) Graph.useItemsForTesting(Fixtures.all())
-        if (intents) Intents.init()
-        if (stub == 1) intending(not(isInternal())).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+        Graph.useItemsForTesting(Fixtures.all())
+        Intents.init()
+        val ok = Instrumentation.ActivityResult(Activity.RESULT_OK, null)
+        if (stub == 1) intending(not(isInternal())).respondWith(ok)
+        if (stub == 2) intending(hasAction(Intent.ACTION_VIEW)).respondWith(ok)
+        val t0 = SystemClock.elapsedRealtime()
+        val callback = ActivityLifecycleCallback { activity, stage ->
+            log("$label +${SystemClock.elapsedRealtime() - t0}ms ${activity.javaClass.simpleName} $stage")
+        }
+        ActivityLifecycleMonitorRegistry.getInstance().addLifecycleCallback(callback)
+        val scenario = ActivityScenario.launch(SearchActivity::class.java)
+        instrumentation.waitForIdleSync()
         val watcher = Thread {
             try {
-                Thread.sleep(3000)
-                dumpMain("$label@3s")
-                Thread.sleep(17000)
-                dumpMain("$label@20s")
+                Thread.sleep(8000)
+                dump("$label@close+8s")
             } catch (e: InterruptedException) {
                 return@Thread
             }
         }
         watcher.isDaemon = true
+        val c0 = SystemClock.elapsedRealtime()
+        log("$label closing at +${c0 - t0}ms")
         watcher.start()
-        val t0 = SystemClock.elapsedRealtime()
-        val scenario = ActivityScenario.launch(SearchActivity::class.java)
-        val t1 = SystemClock.elapsedRealtime()
-        instrumentation.waitForIdleSync()
-        val t2 = SystemClock.elapsedRealtime()
-        if (type) {
-            onView(withId(R.id.search_input)).perform(replaceText("2+2"))
-            instrumentation.waitForIdleSync()
-        }
-        val t3 = SystemClock.elapsedRealtime()
-        val latency = latencyMs()
+        if (releaseBeforeClose) Intents.release()
         scenario.close()
-        val t4 = SystemClock.elapsedRealtime()
+        val closeMs = SystemClock.elapsedRealtime() - c0
         watcher.interrupt()
-        if (intents) Intents.release()
-        if (items) Graph.useItemsForTesting(null)
-        log("$label launch=${t1 - t0}ms idle=${t2 - t1}ms type=${t3 - t2}ms mainLatency=${latency}ms close=${t4 - t3}ms")
+        if (!releaseBeforeClose) Intents.release()
+        ActivityLifecycleMonitorRegistry.getInstance().removeLifecycleCallback(callback)
+        Graph.useItemsForTesting(null)
+        log("$label close=${closeMs}ms")
     }
 
     @Test
-    fun plain() = measure("plain", intents = false, items = false, type = false)
+    fun control() = run("control", stub = 0, releaseBeforeClose = false)
 
     @Test
-    fun intentsOnly() = measure("intentsOnly", intents = true, items = false, type = false)
+    fun stubExternal() = run("stubExternal", stub = 1, releaseBeforeClose = false)
 
     @Test
-    fun itemsOnly() = measure("itemsOnly", intents = false, items = true, type = false)
+    fun stubExternalReleaseFirst() = run("stubExternalReleaseFirst", stub = 1, releaseBeforeClose = true)
 
     @Test
-    fun both() = measure("both", intents = true, items = true, type = false)
-
-    @Test
-    fun bothAndType() = measure("bothAndType", intents = true, items = true, type = true)
-
-    @Test
-    fun stubExternalOnly() = measure("stubExternalOnly", intents = true, items = true, type = false, stub = 1)
-
-    @Test
-    fun stubExternalAndType() = measure("stubExternalAndType", intents = true, items = true, type = true, stub = 1)
+    fun stubViewOnly() = run("stubViewOnly", stub = 2, releaseBeforeClose = false)
 }

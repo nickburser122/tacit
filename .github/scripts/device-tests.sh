@@ -44,14 +44,14 @@ done
 adb logcat -d -v threadtime > logcat.txt
 {
   echo "exit status: $status"
-  echo "--- tests that ran"
-  cat tests-ran.txt
+  echo "--- timing"
+  grep "LaunchTiming" logcat.txt | sed 's/^.*LaunchTiming: //' | cut -c1-260 | head -150
   echo "--- timeout diagnostics"
-  cat timeout-diagnostics.txt 2>/dev/null
+  head -c 6000 timeout-diagnostics.txt 2>/dev/null
+  echo "--- tests that ran"
+  head -c 9000 tests-ran.txt
   echo "--- crash in logcat"
   grep -n -A45 "FATAL EXCEPTION" logcat.txt | head -100
-  echo "--- clipboard service lines"
-  grep -iE "clipboard" logcat.txt | grep -iE "deny|denied|not focused|access" | head -6
   echo "--- instrumentation output"
   grep -nE "Process crashed|FAILED|AssertionError|Tests on|tests completed" device-tests.log | head -20
 } > device-summary.txt

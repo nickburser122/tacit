@@ -1,5 +1,7 @@
 package app.tacit
 
+import android.app.Activity
+import android.app.Instrumentation
 import android.os.Handler
 import android.os.Looper
 import android.os.SystemClock
@@ -8,11 +10,15 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.replaceText
 import androidx.test.espresso.intent.Intents
+import androidx.test.espresso.intent.Intents.intending
+import androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent
+import androidx.test.espresso.intent.matcher.IntentMatchers.isInternal
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import app.tacit.fixtures.Fixtures
 import app.tacit.ui.SearchActivity
+import org.hamcrest.Matchers.not
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.util.concurrent.CountDownLatch
@@ -47,7 +53,7 @@ class LaunchTimingTest {
         return if (done == 0L) -1L else done - start
     }
 
-    private fun measure(label: String, intents: Boolean, items: Boolean, type: Boolean) {
+    private fun measure(label: String, intents: Boolean, items: Boolean, type: Boolean, stub: Int = 0) {
         Graph.prefs.store.edit().clear().commit()
         Graph.prefs.barAtBottom = false
         Graph.prefs.closeAfterAction = false
@@ -57,6 +63,8 @@ class LaunchTimingTest {
         Graph.applyPrefs()
         if (items) Graph.useItemsForTesting(Fixtures.all())
         if (intents) Intents.init()
+        if (stub == 1) intending(not(isInternal())).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
+        if (stub == 2) intending(anyIntent()).respondWith(Instrumentation.ActivityResult(Activity.RESULT_OK, null))
         val watcher = Thread {
             try {
                 Thread.sleep(3000)
@@ -102,4 +110,13 @@ class LaunchTimingTest {
 
     @Test
     fun bothAndType() = measure("bothAndType", intents = true, items = true, type = true)
+
+    @Test
+    fun stubExternalOnly() = measure("stubExternalOnly", intents = true, items = true, type = false, stub = 1)
+
+    @Test
+    fun stubAnyIntent() = measure("stubAnyIntent", intents = true, items = true, type = false, stub = 2)
+
+    @Test
+    fun stubExternalAndType() = measure("stubExternalAndType", intents = true, items = true, type = true, stub = 1)
 }

@@ -123,7 +123,8 @@ class ScreenshotTest {
 
     private fun gallery(activity: Activity): View {
         val palette = Ui.palette(activity)
-        val adapter = ResultAdapter(activity, noop, palette)
+        val adapter = ResultAdapter(activity, noop)
+        adapter.palette = palette
         adapter.installedMessengers = setOf(ContactAction.WHATSAPP, ContactAction.WHATSAPP_BUSINESS)
         adapter.submit(items())
         adapter.selected = 1

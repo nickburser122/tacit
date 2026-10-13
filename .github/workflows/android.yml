@@ -42,6 +42,21 @@ jobs:
           set -o pipefail
           ./gradlew assembleRelease --stacktrace --continue 2>&1 | tee build-release.log
 
+      - name: Perf and size numbers
+        if: always()
+        run: |
+          {
+            grep -h -o 'TACIT_KEYSTROKE_JVM[^<]*' app/build/test-results/testDebugUnitTest/*.xml | head -2
+            for f in app/build/outputs/apk/debug/*.apk app/build/outputs/apk/release/*.apk; do
+              [ -f "$f" ] && echo "$(stat -c %s "$f") bytes $(basename "$f")"
+            done
+          } > numbers.txt
+          msg=$(head -c 1500 numbers.txt)
+          msg="${msg//'%'/'%25'}"
+          msg="${msg//$'\r'/'%0D'}"
+          msg="${msg//$'\n'/'%0A'}"
+          echo "::notice title=Perf and size::$msg"
+
       - name: Benchmark module
         if: always()
         run: |
@@ -131,4 +146,19 @@ jobs:
           arch: x86_64
           target: google_apis
           disable-animations: true
-          script: bash .github/scripts/device-tests.sh app.tacit.SettingsApplyTest,app.tacit.SettingsScreenTest,app.tacit.ClipboardCaptureTest,app.tacit.ClipboardFocusTest,app.tacit.BatteryDisplayTest,app.tacit.QuicklinksTest,app.tacit.SearchScreenTest
+          script: bash .github/scripts/device-tests.sh app.tacit.SettingsApplyTest,app.tacit.SettingsScreenTest,app.tacit.ClipboardCaptureTest,app.tacit.ClipboardFocusTest,app.tacit.BatteryDisplayTest,app.tacit.QuicklinksTest,app.tacit.SearchScreenTest,app.tacit.ResultAdapterTest,app.tacit.ScreenPaddingTest,app.tacit.ScreenshotTest
+
+      - name: Publish screenshots
+        if: always() && matrix.api == 35 && github.ref == 'refs/heads/beta'
+        env:
+          TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          [ -d tacit-shots ] && [ -n "$(ls tacit-shots)" ] || { echo "no screenshots"; exit 0; }
+          cd tacit-shots
+          git init -q -b ci-screenshots
+          git config user.name "tacit-ci"
+          git config user.email "ci@users.noreply.github.com"
+          git add .
+          git commit -q -m "Screenshots from ${GITHUB_SHA}"
+          git push -q --force "https://x-access-token:${TOKEN}@github.com/${REPO}.git" ci-screenshots

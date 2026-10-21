@@ -39,7 +39,8 @@ for cls in ${1//,/ }; do
   find app/build/outputs/androidTest-results -name 'TEST-*.xml' 2>/dev/null | while read -r f; do
     grep -oE '<testsuite [^>]*>' "$f" | head -1 | sed -E 's/.*name="app\.tacit\.([^"]*)".*tests="([0-9]+)".*failures="([0-9]+)".*errors="([0-9]+)".*skipped="([0-9]+)".*time="([^"]*)".*/\1 tests=\2 failures=\3 errors=\4 skipped=\5 time=\6s/'
     grep -oE '<testcase [^>]*>' "$f" | sed -E 's/<testcase name="([^"]*)".*time="([0-9.]+)".*/\1 \2/' | awk '$2 >= 5 {print "  slow: " $0}'
-    awk '/<testcase /{match($0,/name="[^"]*"/); name=substr($0,RSTART,RLENGTH)} /<failure/{print "FAILED " name; n=5} n>0{print; n--}' "$f" | cut -c1-260
+    awk '/<testcase /{match($0,/name="[^"]*"/); name=substr($0,RSTART,RLENGTH)} /<failure/{print "FAILED " name; n=5} n>0{print; n--}' "$f" | cut -c1-1800
+    grep -E 'Caused by|constraints|not displayed|Action will not' "$f" | head -6 | cut -c1-400
   done >> tests-ran.txt
   adb logcat -d -v threadtime >> logcat.txt
   adb logcat -c

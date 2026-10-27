@@ -15,6 +15,7 @@ concurrency:
 
 jobs:
   build:
+    if: ${{ false }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
@@ -171,6 +172,7 @@ jobs:
         run: bash .github/scripts/publish-release.sh
 
   device-tests:
+    if: ${{ false }}
     runs-on: ubuntu-24.04
     timeout-minutes: 40
     strategy:

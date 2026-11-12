@@ -79,6 +79,11 @@ Tacit is at 1.0.1-beta (1.0.0 plus the safety net for 1.1). CI builds it, runs t
 - [ ] Icon: the new launcher icon in your launcher's circle, squircle and themed (monochrome) shapes, on a dark and a light wallpaper; the Quick Settings tile, the two long-press shortcuts, the widget's search mark, the mark beside the title on the first-run card (light, dark and Arabic), and the splash screen on Android 12 and later
 - [ ] Drawer, first press: with the drawer on and 300+ apps, the first screenful of icons is there as the drawer opens (the Apps button starts drawing them on touch), then scroll fast: icons catch up without stutter and none is wrong after an app update
 - [ ] Run the benchmark module on a flagship and a budget phone and record the numbers, including `tacit.cache.read`, `tacit.buildViews` and `tacit.firstQuery` from `ColdStartSectionsBenchmark`; the emulator trend in CI is not a substitute
+- [ ] Uninstall: long-press an app you installed, Uninstall opens the system dialog, confirm, and the row leaves within a second or two; a work-profile or Private Space app removes its own copy; Settings and Phone show no Uninstall entry
+- [ ] Typed web address, email and number: long-press the row, Create quicklink, the new quicklink opens the site, the mail app, the dialer, Messages or WhatsApp; a second Create says it exists
+- [ ] Clipboard row: Save as snippet confirms, a second time says already saved, a hidden clip has no such entry
+- [ ] Flashlight row: toggles with no Copied hint; a copy row still shows it once and a quick second tap does not hide it early
+- [ ] Drawer: the letter under the thumb is bold while dragging the strip; with Animations on, the list and tabs fade in; with it off, nothing changes from 1.1.0
 
 ## Later (owner notes)
 - Files tab in the drawer (decisions 58 and 85): not in 1.1. The scan speed and scanning state it waited for shipped in 1.0.3-beta, but a list would need the whole index in memory and a list UI of its own. Revisit after real-phone scan time and memory numbers.

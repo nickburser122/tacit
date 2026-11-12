@@ -67,6 +67,7 @@ class SearchActivity : Activity(), RowCallbacks {
     private lateinit var root: LinearLayout
     private lateinit var clockBlock: LinearLayout
     private lateinit var emptyHint: TextView
+    private val hideHint = Runnable { emptyHint.visibility = View.GONE }
     private val composer by lazy { ResultComposer(Graph.engine, Graph.grammar, Graph.calculator) }
     private val clipLock by lazy { ClipLock(this, Graph.prefs) { runQuery(input.text.toString()) } }
     private var baseRows: List<SearchItem> = emptyList()
@@ -263,7 +264,7 @@ class SearchActivity : Activity(), RowCallbacks {
         if (current.drawer) {
             val host = FrameLayout(this)
             host.addView(list, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            val letterStrip = LetterStrip(this, palette.muted, density.stripSp).apply {
+            val letterStrip = LetterStrip(this, palette.muted, density.stripSp, palette.foreground).apply {
                 contentDescription = getString(R.string.drawer_index)
                 visibility = View.GONE
                 onPick = ::pickLetter
@@ -714,11 +715,33 @@ class SearchActivity : Activity(), RowCallbacks {
         }
     }
 
-    private fun showDrawerRows() {
+    private fun showDrawerRows(force: Boolean = true) {
         val data = drawerRows()
+        val previous = shownDrawer
         shownDrawer = data
+        if (!force && previous != null && sameRows(previous, data)) return
         adapter.submit(data.items)
         strip?.setLetters(data.letters)
+    }
+
+    private fun sameRows(a: DrawerList, b: DrawerList): Boolean {
+        if (a === b) return true
+        if (a.size != b.size) return false
+        for (index in 0 until a.size) if (a.items[index] !== b.items[index]) return false
+        return true
+    }
+
+    private fun fadeIn(view: View?) {
+        if (view == null) return
+        view.animate().cancel()
+        view.alpha = 0f
+        view.animate().alpha(1f).setDuration(DRAWER_FADE_MS).start()
+    }
+
+    private fun settle(view: View?) {
+        if (view == null) return
+        view.animate().cancel()
+        view.alpha = 1f
     }
 
     private fun openDrawer() {
@@ -736,6 +759,10 @@ class SearchActivity : Activity(), RowCallbacks {
         emptyHint.visibility = View.GONE
         list.setSelection(0)
         hideKeyboard()
+        if (Graph.prefs.animations) {
+            fadeIn(list)
+            fadeIn(tabs)
+        }
     }
 
     private fun closeDrawer(withKeyboard: Boolean) {
@@ -744,6 +771,8 @@ class SearchActivity : Activity(), RowCallbacks {
         strip?.visibility = View.GONE
         tabs?.visibility = View.GONE
         bubble?.visibility = View.GONE
+        settle(list)
+        settle(tabs)
         list.setPadding(Ui.dp(this, 8), 0, Ui.dp(this, 8), 0)
         list.isStackFromBottom = look?.barBottom ?: Graph.prefs.barAtBottom
         runQuery(input.text.toString())
@@ -761,7 +790,7 @@ class SearchActivity : Activity(), RowCallbacks {
     }
 
     private fun refreshRows() {
-        if (drawerOpen) showDrawerRows() else runQuery(input.text.toString())
+        if (drawerOpen) showDrawerRows(false) else runQuery(input.text.toString())
     }
 
     private fun showKeyboard() {
@@ -950,14 +979,16 @@ class SearchActivity : Activity(), RowCallbacks {
         val bounds = Rect().also { view.getGlobalVisibleRect(it) }
         val ok = Actions.primary(this, item, bounds)
         if (!ok) return
+        val toggles = item.kind == ItemKind.SETTING && item.payload.startsWith("toggle|")
         val leavesApp = item.kind !in setOf(ItemKind.CALCULATOR, ItemKind.SNIPPET, ItemKind.CLIPBOARD) &&
-            !(item.kind == ItemKind.SETTING && item.payload.startsWith("toggle|")) && !item.payload.startsWith("copy|") &&
+            !toggles && !item.payload.startsWith("copy|") &&
             !item.payload.startsWith("copyhidden|") && !item.payload.startsWith("xform|")
         if (leavesApp && Graph.prefs.closeAfterAction) input.setText("")
-        if (!leavesApp) {
+        if (!leavesApp && !toggles) {
+            emptyHint.removeCallbacks(hideHint)
             emptyHint.text = getString(R.string.copied)
             emptyHint.visibility = View.VISIBLE
-            emptyHint.postDelayed({ emptyHint.visibility = View.GONE }, 1200)
+            emptyHint.postDelayed(hideHint, 1200)
         }
     }
 
@@ -996,6 +1027,7 @@ class SearchActivity : Activity(), RowCallbacks {
 
     private companion object {
         const val CLIP_RETRY_MS = 600L
+        const val DRAWER_FADE_MS = 140L
         const val PROGRESS_SEARCH_MS = 500L
         const val FILES_STATUS_KEY = "files:status"
         const val SETTINGS_PAYLOAD = "tacit|app.tacit.ui.SettingsActivity"

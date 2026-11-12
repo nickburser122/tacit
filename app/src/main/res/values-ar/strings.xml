@@ -282,4 +282,9 @@
     <string name="export_failed">تعذّر التصدير</string>
     <string name="export_no_permission">اسمح بالوصول إلى جهات الاتصال للتصدير</string>
     <string name="keys_actions">timer 10 tea  مؤقت\nalarm 7:30  منبّه\nevent dentist tomorrow 3pm  موعد في التقويم\nuuid  pass 20  roll 2d6  flip  rand 1 10\nupper  lower  title  slug  b64  urlenc\nexport  جهات الاتصال بصيغة vCard أو CSV\nمؤقت  منبه  موعد  تصدير  (بالعربية أيضًا)</string>
+    <string name="uninstall_failed">إزالة التثبيت غير متاحة لهذا التطبيق</string>
+    <string name="snippet_saved">تم الحفظ كمقتطف</string>
+    <string name="snippet_exists">محفوظ بالفعل كمقتطف</string>
+    <string name="profile_work">عمل</string>
+    <string name="profile_private">خاص</string>
 </resources>

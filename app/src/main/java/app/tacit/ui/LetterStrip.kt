@@ -8,12 +8,14 @@ import android.util.TypedValue
 import android.view.MotionEvent
 import android.view.View
 
-class LetterStrip(context: Context, ink: Int, textSp: Float = 11f) : View(context) {
+class LetterStrip(context: Context, ink: Int, textSp: Float = 11f, activeInk: Int = ink) : View(context) {
 
     private val paint = Paint(Paint.ANTI_ALIAS_FLAG)
+    private val activePaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val minCell = Ui.dp(context, 15).toFloat()
     private var letters = CharArray(0)
     private var last = -1
+    private var active = -1
 
     var onPick: (Int) -> Unit = {}
     var onActive: (Boolean) -> Unit = {}
@@ -23,12 +25,17 @@ class LetterStrip(context: Context, ink: Int, textSp: Float = 11f) : View(contex
         paint.textAlign = Paint.Align.CENTER
         paint.textSize = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP, textSp, context.resources.displayMetrics)
         paint.typeface = Typeface.create(Typeface.DEFAULT, 500, false)
+        activePaint.color = activeInk
+        activePaint.textAlign = Paint.Align.CENTER
+        activePaint.textSize = paint.textSize
+        activePaint.typeface = Typeface.create(Typeface.DEFAULT, 700, false)
         importantForAccessibility = IMPORTANT_FOR_ACCESSIBILITY_YES
     }
 
     fun setLetters(value: CharArray) {
         letters = value
         last = -1
+        active = -1
         invalidate()
     }
 
@@ -50,7 +57,7 @@ class LetterStrip(context: Context, ink: Int, textSp: Float = 11f) : View(contex
         val baseline = -(paint.ascent() + paint.descent()) / 2f
         var index = 0
         while (index < count) {
-            canvas.drawText(letters, index, 1, centre, (index + 0.5f) * cell + baseline, paint)
+            canvas.drawText(letters, index, 1, centre, (index + 0.5f) * cell + baseline, if (index == active) activePaint else paint)
             index += step
         }
     }
@@ -64,24 +71,29 @@ class LetterStrip(context: Context, ink: Int, textSp: Float = 11f) : View(contex
             }
             MotionEvent.ACTION_MOVE -> pick(event.y)
             MotionEvent.ACTION_UP -> {
-                last = -1
-                onActive(false)
+                release()
                 performClick()
             }
-            MotionEvent.ACTION_CANCEL -> {
-                last = -1
-                onActive(false)
-            }
+            MotionEvent.ACTION_CANCEL -> release()
         }
         return true
     }
 
     override fun performClick(): Boolean = super.performClick()
 
+    private fun release() {
+        last = -1
+        active = -1
+        onActive(false)
+        invalidate()
+    }
+
     private fun pick(y: Float) {
         val index = indexAt(y)
         if (index >= 0 && index != last) {
             last = index
+            active = index
+            invalidate()
             onPick(index)
         }
     }

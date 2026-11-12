@@ -287,4 +287,6 @@
     <string name="snippet_exists">محفوظ بالفعل كمقتطف</string>
     <string name="profile_work">عمل</string>
     <string name="profile_private">خاص</string>
+    <string name="file_saved">تم الحفظ</string>
+    <string name="import_failed">تعذّر استيراد هذا الملف</string>
 </resources>

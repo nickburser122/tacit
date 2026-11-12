@@ -18,6 +18,11 @@ Tacit is at 1.0.1-beta (1.0.0 plus the safety net for 1.1). CI builds it, runs t
 4. Publish the draft.
 5. F-Droid: `docs/fdroid/app.tacit.yml` is an unvalidated draft recipe; steps are in `docs/SIGNING.md`.
 
+## Release 1.1.1, step by step
+1. Merge the M14 pull request. CI on `main` creates a **draft** release `v1.1.1` with `tacit-v1.1.1-unsigned.apk` and `SHA256SUMS` (the notes file `docs/release-notes/v1.1.1.md` has no suffix).
+2. Sign it on your computer and upload the signed APK: `docs/SIGNING.md`.
+3. Install it over 1.1.0 (same key), go through the M14 items of the checklist below, then publish the draft.
+
 ## Release 1.1.0, step by step
 1. Merge the M13 pull request. CI on `main` creates a **draft** release `v1.1.0` with `tacit-v1.1.0-unsigned.apk` and `SHA256SUMS` (the notes file `docs/release-notes/v1.1.0.md` has no suffix).
 2. Sign it on your computer and upload the signed APK: `docs/SIGNING.md`.

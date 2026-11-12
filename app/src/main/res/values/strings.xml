@@ -290,4 +290,6 @@
     <string name="snippet_exists">Already saved as a snippet</string>
     <string name="profile_work">Work</string>
     <string name="profile_private">Private</string>
+    <string name="file_saved">Saved</string>
+    <string name="import_failed">Could not import this file</string>
 </resources>

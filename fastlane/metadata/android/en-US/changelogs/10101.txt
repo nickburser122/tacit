@@ -1,0 +1,6 @@
+Fixes and polish for 1.1.
+• Uninstall works again, also for work and Private Space apps
+• Create quicklink from a typed web address, email or number
+• Save as snippet confirms and skips copies
+• Backups and CSV files say whether they worked
+• Fixes: flashlight hint, spreadsheet CSV headers, App info crash

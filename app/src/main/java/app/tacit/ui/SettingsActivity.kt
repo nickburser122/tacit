@@ -354,7 +354,10 @@ class SettingsActivity : Activity() {
 
     private fun writeBackup(uri: Uri) {
         Graph.worker.post {
-            runCatching { contentResolver.openOutputStream(uri, "wt")?.use { it.write(Backup.export().toByteArray()) } }
+            val saved = runCatching { contentResolver.openOutputStream(uri, "wt")?.use { it.write(Backup.export().toByteArray()) } != null }.getOrDefault(false)
+            Graph.main.post {
+                if (!isFinishing && !isDestroyed) Toast.makeText(this, if (saved) R.string.file_saved else R.string.export_failed, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -384,12 +387,13 @@ class SettingsActivity : Activity() {
     private fun applyImport(text: String) {
         val themeBefore = prefs.theme
         Graph.worker.post {
-            runCatching { Backup.import(text) }
+            val imported = runCatching { Backup.import(text) }.isSuccess
             Graph.main.post {
                 Graph.applyPrefs()
                 Graph.icons.clear()
                 Graph.requestRefresh(RefreshSources.ALL)
                 if (isFinishing || isDestroyed) return@post
+                if (!imported) Toast.makeText(this, R.string.import_failed, Toast.LENGTH_LONG).show()
                 if (prefs.theme != themeBefore) recreate() else build()
             }
         }

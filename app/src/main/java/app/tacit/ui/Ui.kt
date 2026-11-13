@@ -95,9 +95,9 @@ object Ui {
     }
 
     fun palette(context: Context): Palette = if (isDark(context)) {
-        Palette(Color.BLACK, Color.WHITE, 0xFF8A8A8A.toInt(), 0xFF262626.toInt(), 0xFF111111.toInt())
+        Palette(Color.BLACK, Color.WHITE, 0xFF8A8A8A.toInt(), 0xFF2E2E2E.toInt(), 0xFF1A1A1A.toInt())
     } else {
-        Palette(Color.WHITE, Color.BLACK, 0xFF6E6E6E.toInt(), 0xFFE2E2E2.toInt(), 0xFFF3F3F3.toInt())
+        Palette(Color.WHITE, Color.BLACK, 0xFF686868.toInt(), 0xFFE2E2E2.toInt(), 0xFFEDEDED.toInt())
     }
 
     fun dp(context: Context, value: Int): Int =

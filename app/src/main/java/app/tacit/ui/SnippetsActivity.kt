@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import android.widget.BaseAdapter
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -17,6 +18,7 @@ import app.tacit.core.RefreshSources
 import app.tacit.core.RowDensity
 import app.tacit.data.Csv
 import app.tacit.data.Snippet
+import java.io.IOException
 
 class SnippetsActivity : Activity() {
 
@@ -116,16 +118,24 @@ class SnippetsActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         val uri = data?.data ?: return
         if (resultCode != RESULT_OK) return
-        runCatching {
-            if (requestCode == 51) {
-                val table = listOf(listOf("trigger", "title", "body")) + Graph.snippets.exportRows()
-                contentResolver.openOutputStream(uri, "wt")?.use { it.write(Csv.encode(table).toByteArray()) }
-            } else if (requestCode == 52) {
-                val text = contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return
-                Graph.snippets.importRows(Csv.decode(text))
-                Graph.requestRefresh(RefreshSources.SNIPPETS)
-                reload()
+        val message = runCatching {
+            when (requestCode) {
+                51 -> {
+                    val table = listOf(listOf("trigger", "title", "body")) + Graph.snippets.exportRows()
+                    val stream = contentResolver.openOutputStream(uri, "wt") ?: throw IOException()
+                    stream.use { it.write(Csv.encode(table).toByteArray()) }
+                    getString(R.string.file_saved)
+                }
+                52 -> {
+                    val text = contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: throw IOException()
+                    val count = Graph.snippets.importRows(Csv.decode(text))
+                    Graph.requestRefresh(RefreshSources.SNIPPETS)
+                    reload()
+                    getString(R.string.imported_rows, count)
+                }
+                else -> return
             }
-        }
+        }.getOrElse { getString(if (requestCode == 51) R.string.export_failed else R.string.import_failed) }
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

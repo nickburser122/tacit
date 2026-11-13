@@ -285,4 +285,11 @@
     <string name="export_failed">Export failed</string>
     <string name="export_no_permission">Allow contacts access to export</string>
     <string name="keys_actions">timer 10 tea  timer\nalarm 7:30  alarm\nevent dentist tomorrow 3pm  calendar event\nuuid  pass 20  roll 2d6  flip  rand 1 10\nupper  lower  title  slug  b64  urlenc\nexport  contacts as vCard or CSV</string>
+    <string name="uninstall_failed">Uninstall is not available for this app</string>
+    <string name="snippet_saved">Saved as snippet</string>
+    <string name="snippet_exists">Already saved as a snippet</string>
+    <string name="profile_work">Work</string>
+    <string name="profile_private">Private</string>
+    <string name="file_saved">Saved</string>
+    <string name="import_failed">Could not import this file</string>
 </resources>

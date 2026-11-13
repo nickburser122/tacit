@@ -4,7 +4,7 @@
 
 A keyboard-first, offline, black-and-white Android launcher. You type, press Enter, and it's done. Inspired by KISS Launcher, built for F-Droid. "Raycast for Android."
 
-> **Status: 1.1.0 release candidate** (stable release notes in `docs/release-notes/v1.1.0.md`; the owner signs and publishes it). CI builds it, runs the unit tests, and runs the device tests on Android 14, 15 and 16 emulators; a non-blocking CI job also runs the benchmark module on an API 35 emulator and prints a trend. Nothing here has been measured on a real phone, and there are no benchmark numbers from real devices. See `docs/HANDOFF.md`.
+> **Status: 1.1.1 release candidate** (stable release notes in `docs/release-notes/v1.1.1.md`; the owner signs and publishes it). CI builds it, runs the unit tests, and runs the device tests on Android 14, 15 and 16 emulators; a non-blocking CI job also runs the benchmark module on an API 35 emulator and prints a trend. Nothing here has been measured on a real phone, and there are no benchmark numbers from real devices. See `docs/HANDOFF.md`.
 
 ## Features
 - **First run**: a small card over the list says what Tacit does and offers to make it your home app. It shows once per install.

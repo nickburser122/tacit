@@ -29,7 +29,27 @@ object QuicklinkMaker {
         }
         item.kind == ItemKind.ACTION && item.key.startsWith("shortcut:") ->
             QuicklinkDraft(QuicklinkType.APP_SHORTCUT, item.payload, "${item.label} · ${item.subtitle}", item.label)
+        item.kind == ItemKind.ACTION && item.key == "url" -> typedUrlDraft(item.payload.removePrefix("url|"))
+        item.kind == ItemKind.ACTION && item.key == "mail" -> typedUrlDraft("mailto:" + item.payload.removePrefix("mail|"))
+        item.kind == ItemKind.ACTION && item.key.startsWith("num:") -> typedNumberDraft(item)
         else -> null
+    }
+
+    private fun typedUrlDraft(url: String): QuicklinkDraft? {
+        val target = QuicklinkRules.normalizeUrl(url) ?: return null
+        return QuicklinkDraft(QuicklinkType.URL, target, "", QuicklinkRules.host(target))
+    }
+
+    private fun typedNumberDraft(item: SearchItem): QuicklinkDraft? {
+        val action = when (item.key) {
+            "num:call" -> "call"
+            "num:sms" -> "sms"
+            "num:wa" -> "wa"
+            else -> return null
+        }
+        val number = item.payload.substringAfter('|')
+        val target = QuicklinkRules.contactTarget(action, number) ?: return null
+        return QuicklinkDraft(QuicklinkType.CONTACT, target, number, item.label)
     }
 
     fun create(activity: Activity, item: SearchItem) {

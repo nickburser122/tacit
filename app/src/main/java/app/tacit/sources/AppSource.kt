@@ -2,12 +2,16 @@ package app.tacit.sources
 
 import android.content.ComponentName
 import android.content.Context
+import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherApps
+import android.net.Uri
 import android.os.Build
 import android.os.Process
 import android.os.UserHandle
 import android.os.UserManager
 import app.tacit.Graph
+import app.tacit.R
 import app.tacit.core.ItemKind
 import app.tacit.core.RefreshSources
 import app.tacit.core.SearchItem
@@ -109,10 +113,10 @@ class AppSource(private val context: Context) {
         if (Build.VERSION.SDK_INT >= 35) {
             runCatching {
                 val info = launcherApps.getLauncherUserInfo(user)
-                if (info?.userType == UserManager.USER_TYPE_PROFILE_PRIVATE) return "Private"
+                if (info?.userType == UserManager.USER_TYPE_PROFILE_PRIVATE) return context.getString(R.string.profile_private)
             }
         }
-        return "Work"
+        return context.getString(R.string.profile_work)
     }
 
     private fun loadShortcuts() {
@@ -159,7 +163,26 @@ class AppSource(private val context: Context) {
     fun openAppInfo(payload: String) {
         val parts = payload.split('|')
         val component = ComponentName.unflattenFromString(parts[0]) ?: return
-        launcherApps.startAppDetailsActivity(component, userFor(parts.getOrNull(1)?.toLongOrNull()), null, null)
+        runCatching { launcherApps.startAppDetailsActivity(component, userFor(parts.getOrNull(1)?.toLongOrNull()), null, null) }
+    }
+
+    fun uninstallIntent(payload: String): Intent? {
+        val parts = payload.split('|')
+        val component = ComponentName.unflattenFromString(parts[0]) ?: return null
+        val intent = Intent(Intent.ACTION_UNINSTALL_PACKAGE, Uri.fromParts("package", component.packageName, null))
+        val user = userFor(parts.getOrNull(1)?.toLongOrNull())
+        if (user != Process.myUserHandle()) intent.putExtra(Intent.EXTRA_USER, user)
+        return intent
+    }
+
+    fun canUninstall(payload: String): Boolean {
+        val parts = payload.split('|')
+        val component = ComponentName.unflattenFromString(parts[0]) ?: return false
+        val user = userFor(parts.getOrNull(1)?.toLongOrNull())
+        return runCatching {
+            val flags = launcherApps.getApplicationInfo(component.packageName, 0, user).flags
+            (flags and ApplicationInfo.FLAG_SYSTEM) == 0 || (flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0
+        }.getOrDefault(true)
     }
 
     fun userFor(serial: Long?): UserHandle =

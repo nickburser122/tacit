@@ -10,7 +10,8 @@ object Csv {
 
     fun encode(rows: List<List<String>>): String = rows.joinToString("\n") { encodeRow(it) }
 
-    fun decode(text: String): List<List<String>> {
+    fun decode(source: String): List<List<String>> {
+        val text = if (source.startsWith('\uFEFF')) source.substring(1) else source
         val rows = ArrayList<List<String>>()
         var row = ArrayList<String>()
         val field = StringBuilder()

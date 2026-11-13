@@ -38,6 +38,13 @@ class PlatformContractTest {
     }
 
     @Test
+    fun uninstallPermissionIsRequested() {
+        val info = pm.getPackageInfo(context.packageName, PackageManager.GET_PERMISSIONS)
+        val requested = info.requestedPermissions.orEmpty().toList()
+        assertTrue(requested.contains(Manifest.permission.REQUEST_DELETE_PACKAGES))
+    }
+
+    @Test
     fun homeIntentResolvesToTacit() {
         val intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).setPackage(context.packageName)
         assertNotNull(pm.resolveActivity(intent, 0))

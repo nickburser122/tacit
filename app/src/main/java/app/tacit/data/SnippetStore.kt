@@ -8,9 +8,10 @@ import java.util.UUID
 
 data class Snippet(val id: String, val trigger: String, val title: String, val body: String)
 
-class SnippetStore(context: Context) {
+class SnippetStore(private val file: File) {
 
-    private val file = File(context.filesDir, "snippets.csv")
+    constructor(context: Context) : this(File(context.filesDir, "snippets.csv"))
+
     private val lock = Any()
     private var cache: MutableList<Snippet>? = null
 
@@ -40,16 +41,25 @@ class SnippetStore(context: Context) {
 
     fun exportRows(): List<List<String>> = synchronized(lock) { load().map { listOf(it.trigger, it.title, it.body) } }
 
-    fun importRows(rows: List<List<String>>) = synchronized(lock) {
+    fun importRows(rows: List<List<String>>): Int = synchronized(lock) {
         val list = load()
+        var applied = 0
         for (row in rows) {
             if (row.size < 3 || row[2].isEmpty()) continue
             if (row[0] == "trigger" && row[1] == "title") continue
             val existing = list.indexOfFirst { it.trigger.isNotEmpty() && it.trigger == row[0] }
+            if (existing < 0 && list.any { it.trigger == row[0] && it.title == row[1] && it.body == row[2] }) continue
             val snippet = Snippet(if (existing >= 0) list[existing].id else newId(), row[0], row[1], row[2])
-            if (existing >= 0) list[existing] = snippet else list.add(snippet)
+            if (existing >= 0) {
+                if (list[existing] == snippet) continue
+                list[existing] = snippet
+            } else {
+                list.add(snippet)
+            }
+            applied++
         }
-        save(list)
+        if (applied > 0) save(list)
+        applied
     }
 
     private fun load(): MutableList<Snippet> {

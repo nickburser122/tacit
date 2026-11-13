@@ -3,7 +3,6 @@ package app.tacit.ui
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
-import android.net.Uri
 import android.provider.Settings
 import android.widget.EditText
 import android.widget.Toast
@@ -13,10 +12,8 @@ import app.tacit.actions.Actions
 import app.tacit.actions.PinShortcut
 import app.tacit.core.AliasRules
 import app.tacit.core.ItemKind
-import app.tacit.core.RefreshSources
 import app.tacit.core.SearchItem
 import app.tacit.data.AliasText
-import app.tacit.data.Snippet
 
 class MenuEntry(val label: String, val run: () -> Unit)
 
@@ -46,8 +43,11 @@ object SecondaryMenu {
                 add(R.string.menu_notifications) {
                     Actions.start(activity, Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, pkg))
                 }
-                add(R.string.menu_uninstall) {
-                    Actions.start(activity, Intent(Intent.ACTION_DELETE, Uri.fromParts("package", pkg, null)))
+                if (Graph.apps.canUninstall(item.payload)) add(R.string.menu_uninstall) {
+                    val intent = Graph.apps.uninstallIntent(item.payload)
+                    if (intent == null || !Actions.start(activity, intent)) {
+                        Toast.makeText(activity, R.string.uninstall_failed, Toast.LENGTH_SHORT).show()
+                    }
                 }
                 add(R.string.menu_hide) {
                     Graph.prefs.hidden = Graph.prefs.hidden + item.key
@@ -63,10 +63,7 @@ object SecondaryMenu {
             }
             ItemKind.CLIPBOARD -> {
                 val id = item.key.removePrefix("clip:").toLongOrNull()
-                add(R.string.menu_save_snippet) {
-                    Graph.snippets.upsert(Snippet(Graph.snippets.newId(), "", "", item.payload))
-                    Graph.requestRefresh(RefreshSources.SNIPPETS)
-                }
+                if (item.subtitle != "hidden") add(R.string.menu_save_snippet) { SnippetMaker.saveClip(activity, item.payload) }
                 if (id != null) add(R.string.menu_delete) {
                     Graph.clipboard.delete(id)
                     changed()

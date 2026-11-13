@@ -14,6 +14,7 @@ import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
+import android.widget.Toast
 import app.tacit.Graph
 import app.tacit.R
 import app.tacit.core.AliasRules
@@ -217,6 +218,7 @@ class AliasesActivity : Activity() {
                     val table = listOf(listOf("key", "name", "aliases")) +
                         sourceRows().map { listOf(it.key, it.label, currentAliases(it)) }
                     contentResolver.openOutputStream(uri, "wt")?.use { it.write(Csv.encode(table).toByteArray()) }
+                    Toast.makeText(this, R.string.file_saved, Toast.LENGTH_SHORT).show()
                 }
                 REQUEST_IMPORT -> {
                     val text = contentResolver.openInputStream(uri)?.use { it.readBytes().toString(Charsets.UTF_8) } ?: return
@@ -241,6 +243,8 @@ class AliasesActivity : Activity() {
                     AlertDialog.Builder(this).setMessage(message).setPositiveButton(R.string.ok, null).show()
                 }
             }
+        }.onFailure {
+            Toast.makeText(this, if (requestCode == REQUEST_EXPORT) R.string.export_failed else R.string.import_failed, Toast.LENGTH_SHORT).show()
         }
     }
 

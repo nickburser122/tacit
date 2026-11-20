@@ -99,6 +99,8 @@
     <string name="ql_choice_legacy">Legacy shortcut</string>
     <string name="ql_choose_screen">Choose a screen…</string>
     <string name="ql_cannot_open">This screen can’t be opened directly</string>
+    <string name="file_missing">This file no longer exists</string>
+    <string name="file_no_app">No app can open this file</string>
     <string name="ql_try">Try</string>
     <string name="ql_icon">Icon</string>
     <string name="ql_icon_value">Icon: %1$s</string>

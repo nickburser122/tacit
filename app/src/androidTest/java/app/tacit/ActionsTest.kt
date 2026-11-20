@@ -22,13 +22,16 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasAction
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasFlags
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.rule.GrantPermissionRule
+import app.tacit.actions.Actions
 import app.tacit.actions.ExportActivity
 import app.tacit.actions.QuickLauncher
+import app.tacit.actions.TacitFileProvider
 import app.tacit.core.ExportContact
 import app.tacit.core.ExportKind
 import app.tacit.core.ExportNumber
@@ -39,6 +42,7 @@ import app.tacit.data.ContactExport
 import app.tacit.ui.SearchActivity
 import app.tacit.ui.SecondaryMenu
 import org.hamcrest.Matchers.allOf
+import org.hamcrest.Matchers.anyOf
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -48,6 +52,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
+import java.io.FileNotFoundException
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneOffset
@@ -130,6 +135,65 @@ class ActionsTest {
                 ExportContact("أسماء جودة", listOf(ExportNumber("+966501234567", "Mobile", "CELL"), ExportNumber("0225551234", "Home", "HOME"))),
                 ExportContact("Zed Tail", listOf(ExportNumber("999", "Other", null)))
             )
+        }
+    }
+
+    @Test
+    fun openingAFileStartsTheViewerInItsOwnTask() {
+        val sample = File(context.getExternalFilesDir(null)!!, "m4-open.txt").apply { writeText("hello") }
+        try {
+            ActivityScenario.launch(SearchActivity::class.java).use { scenario ->
+                var launched = false
+                scenario.onActivity { launched = Actions.openFile(it, sample.absolutePath) }
+                assertTrue(launched)
+                intended(allOf(anyOf(hasAction(Intent.ACTION_VIEW), hasAction(Intent.ACTION_CHOOSER)), hasFlags(Intent.FLAG_ACTIVITY_NEW_TASK)))
+            }
+        } finally {
+            sample.delete()
+        }
+    }
+
+    @Test
+    fun openingAMissingFileDoesNotStartAnything() {
+        val missing = File(context.getExternalFilesDir(null)!!, "m4-missing.txt").apply { delete() }
+        ActivityScenario.launch(SearchActivity::class.java).use { scenario ->
+            var launched = true
+            scenario.onActivity { launched = Actions.openFile(it, missing.absolutePath) }
+            assertFalse(launched)
+        }
+    }
+
+    @Test
+    fun theFileProviderServesReadsAndRefusesEverythingElse() {
+        val sample = File(context.getExternalFilesDir(null)!!, "m4-provider.txt").apply { writeText("hello provider") }
+        try {
+            val uri = TacitFileProvider.uriFor(context, sample)
+            assertEquals("text/plain", context.contentResolver.getType(uri))
+            context.contentResolver.openFileDescriptor(uri, "r")!!.use {
+                assertEquals(sample.length(), it.statSize)
+            }
+            context.contentResolver.query(uri, null, null, null, null)!!.use {
+                assertTrue(it.moveToFirst())
+                assertEquals(sample.name, it.getString(it.getColumnIndexOrThrow(android.provider.OpenableColumns.DISPLAY_NAME)))
+                assertEquals(sample.length(), it.getLong(it.getColumnIndexOrThrow(android.provider.OpenableColumns.SIZE)))
+            }
+            var refused = false
+            try {
+                context.contentResolver.openFileDescriptor(uri, "rw")?.close()
+            } catch (error: SecurityException) {
+                refused = true
+            }
+            assertTrue(refused)
+            sample.delete()
+            var missing = false
+            try {
+                context.contentResolver.openFileDescriptor(uri, "r")?.close()
+            } catch (error: FileNotFoundException) {
+                missing = true
+            }
+            assertTrue(missing)
+        } finally {
+            sample.delete()
         }
     }
 

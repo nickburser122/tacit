@@ -10,6 +10,7 @@ import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.OpenableColumns
 import java.io.File
+import java.io.FileNotFoundException
 
 class TacitFileProvider : ContentProvider() {
 
@@ -18,15 +19,17 @@ class TacitFileProvider : ContentProvider() {
     private fun fileOf(uri: Uri): File {
         val path = uri.path ?: throw SecurityException("No path")
         val file = File(path).canonicalFile
-        val allowed = file.absolutePath.startsWith("/storage/") || file.absolutePath.startsWith("/sdcard/") ||
-            file.absolutePath.startsWith(Environment.getExternalStorageDirectory().absolutePath)
-        if (!allowed) throw SecurityException("Outside shared storage")
+        val absolute = file.absolutePath
+        val roots = listOf("/storage/", "/sdcard/", Environment.getExternalStorageDirectory().absolutePath + "/")
+        if (roots.none { absolute.startsWith(it) }) throw SecurityException("Outside shared storage")
         return file
     }
 
     override fun openFile(uri: Uri, mode: String): ParcelFileDescriptor {
         if (mode != "r") throw SecurityException("Read only")
-        return ParcelFileDescriptor.open(fileOf(uri), ParcelFileDescriptor.MODE_READ_ONLY)
+        val file = fileOf(uri)
+        if (!file.isFile) throw FileNotFoundException(file.name)
+        return ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
     }
 
     override fun query(uri: Uri, projection: Array<out String>?, selection: String?, selectionArgs: Array<out String>?, sortOrder: String?): Cursor {
@@ -38,6 +41,7 @@ class TacitFileProvider : ContentProvider() {
             when (column) {
                 OpenableColumns.DISPLAY_NAME -> file.name
                 OpenableColumns.SIZE -> file.length()
+                "mime_type" -> Actions.mimeOf(file.name)
                 else -> null
             }
         })

@@ -2,6 +2,7 @@ package app.tacit.actions
 
 import android.app.Activity
 import android.content.ActivityNotFoundException
+import android.content.ClipData
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
@@ -12,7 +13,9 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.DocumentsContract
 import android.webkit.MimeTypeMap
+import android.widget.Toast
 import app.tacit.Graph
+import app.tacit.R
 import app.tacit.TacitApp
 import app.tacit.core.ItemKind
 import app.tacit.core.SearchItem
@@ -163,12 +166,21 @@ object Actions {
 
     fun openFile(activity: Activity, path: String): Boolean {
         if (!path.startsWith("content://") && File(path).isDirectory) return openFolder(activity, path)
+        if (!path.startsWith("content://") && !File(path).exists()) {
+            Toast.makeText(activity, R.string.file_missing, Toast.LENGTH_SHORT).show()
+            return false
+        }
         val uri = contentUri(activity, path)
         val mime = if (path.startsWith("content://")) activity.contentResolver.getType(uri) ?: mimeOf(nameOf(activity, path))
         else mimeOf(File(path).name)
         if (mime == DocumentsContract.Document.MIME_TYPE_DIR) return openDirectory(activity, uri)
-        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        return start(activity, Intent.createChooser(intent, null).takeIf { activity.packageManager.resolveActivity(intent, 0) == null } ?: intent)
+        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mime)
+            .setClipData(ClipData.newRawUri("", uri))
+            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val direct = activity.packageManager.resolveActivity(intent, 0) != null
+        val launched = start(activity, if (direct) intent else Intent.createChooser(intent, null))
+        if (!launched) Toast.makeText(activity, R.string.file_no_app, Toast.LENGTH_SHORT).show()
+        return launched
     }
 
     private fun openDirectory(activity: Activity, documentUri: Uri): Boolean {
@@ -219,12 +231,18 @@ object Actions {
         start(activity, Intent(Intent.ACTION_VIEW, Uri.parse(engine.urlFor(query))))
 
     fun start(activity: Activity, intent: Intent): Boolean = try {
-        activity.startActivity(intent)
+        activity.startActivity(detached(activity, intent))
         true
     } catch (error: ActivityNotFoundException) {
         false
     } catch (error: SecurityException) {
         false
+    }
+
+    private fun detached(activity: Activity, intent: Intent): Intent {
+        val component = intent.component
+        if (component != null && component.packageName == activity.packageName) return intent
+        return intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
 
     private inline fun safe(activity: Activity, block: () -> Unit): Boolean = try {

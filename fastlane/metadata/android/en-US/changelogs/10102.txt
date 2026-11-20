@@ -1,0 +1,3 @@
+Fixes for opening files and videos.
+• Files and videos open in their own task, so a player that closes itself no longer takes Tacit with it
+• A file that can't be opened now says why

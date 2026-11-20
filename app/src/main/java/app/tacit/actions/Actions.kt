@@ -174,9 +174,8 @@ object Actions {
         val mime = if (path.startsWith("content://")) activity.contentResolver.getType(uri) ?: mimeOf(nameOf(activity, path))
         else mimeOf(File(path).name)
         if (mime == DocumentsContract.Document.MIME_TYPE_DIR) return openDirectory(activity, uri)
-        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mime)
-            .setClipData(ClipData.newRawUri("", uri))
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.clipData = ClipData.newRawUri("", uri)
         val direct = activity.packageManager.resolveActivity(intent, 0) != null
         val launched = start(activity, if (direct) intent else Intent.createChooser(intent, null))
         if (!launched) Toast.makeText(activity, R.string.file_no_app, Toast.LENGTH_SHORT).show()

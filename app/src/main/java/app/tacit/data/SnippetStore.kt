@@ -2,6 +2,7 @@ package app.tacit.data
 
 import android.content.Context
 import java.io.File
+import java.time.DateTimeException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.UUID
@@ -88,10 +89,19 @@ object SnippetExpander {
         placeholder.replace(body) { match ->
             val format = match.groupValues[2]
             when (match.groupValues[1]) {
-                "date" -> now.format(DateTimeFormatter.ofPattern(format.ifEmpty { "yyyy-MM-dd" }))
-                "time" -> now.format(DateTimeFormatter.ofPattern(format.ifEmpty { "HH:mm" }))
-                "datetime" -> now.format(DateTimeFormatter.ofPattern(format.ifEmpty { "yyyy-MM-dd HH:mm" }))
+                "date" -> formatted(now, format, "yyyy-MM-dd") ?: match.value
+                "time" -> formatted(now, format, "HH:mm") ?: match.value
+                "datetime" -> formatted(now, format, "yyyy-MM-dd HH:mm") ?: match.value
                 else -> clipboard.orEmpty()
             }
+        }
+
+    private fun formatted(now: LocalDateTime, format: String, fallback: String): String? =
+        try {
+            now.format(DateTimeFormatter.ofPattern(format.ifEmpty { fallback }))
+        } catch (error: DateTimeException) {
+            null
+        } catch (error: IllegalArgumentException) {
+            null
         }
 }

@@ -99,6 +99,7 @@
     <string name="ql_cannot_open">لا يمكن فتح هذه الشاشة مباشرة</string>
     <string name="file_missing">هذا الملف لم يعد موجودًا</string>
     <string name="file_no_app">لا يوجد تطبيق يمكنه فتح هذا الملف</string>
+    <string name="open_failed">تعذّر فتح هذا</string>
     <string name="ql_try">جرّب</string>
     <string name="ql_icon">الأيقونة</string>
     <string name="ql_icon_value">الأيقونة: %1$s</string>

@@ -32,6 +32,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextClock
 import android.widget.TextView
+import android.widget.Toast
 import android.window.OnBackInvokedCallback
 import android.window.OnBackInvokedDispatcher
 import app.tacit.Graph
@@ -978,7 +979,10 @@ class SearchActivity : Activity(), RowCallbacks {
         }
         val bounds = Rect().also { view.getGlobalVisibleRect(it) }
         val ok = Actions.primary(this, item, bounds)
-        if (!ok) return
+        if (!ok) {
+            if (item.kind != ItemKind.FILE) Toast.makeText(this, R.string.open_failed, Toast.LENGTH_SHORT).show()
+            return
+        }
         val toggles = item.kind == ItemKind.SETTING && item.payload.startsWith("toggle|")
         val leavesApp = item.kind !in setOf(ItemKind.CALCULATOR, ItemKind.SNIPPET, ItemKind.CLIPBOARD) &&
             !toggles && !item.payload.startsWith("copy|") &&

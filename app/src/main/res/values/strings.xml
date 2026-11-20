@@ -101,6 +101,7 @@
     <string name="ql_cannot_open">This screen can’t be opened directly</string>
     <string name="file_missing">This file no longer exists</string>
     <string name="file_no_app">No app can open this file</string>
+    <string name="open_failed">Couldn’t open that</string>
     <string name="ql_try">Try</string>
     <string name="ql_icon">Icon</string>
     <string name="ql_icon_value">Icon: %1$s</string>

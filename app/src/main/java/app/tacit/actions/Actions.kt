@@ -18,6 +18,7 @@ import app.tacit.Graph
 import app.tacit.R
 import app.tacit.TacitApp
 import app.tacit.core.ItemKind
+import app.tacit.core.PathNames
 import app.tacit.core.SearchItem
 import app.tacit.core.WebEngine
 import app.tacit.data.SnippetExpander
@@ -26,6 +27,8 @@ import java.io.File
 import java.time.LocalDateTime
 
 object Actions {
+
+    private const val SNIPPET_CLIP_LIMIT = 100_000
 
     const val WHATSAPP = "com.whatsapp"
     const val WHATSAPP_BUSINESS = "com.whatsapp.w4b"
@@ -40,7 +43,7 @@ object Actions {
         ItemKind.CONTACT -> openContact(activity, item)
         ItemKind.SETTING -> openSetting(activity, item)
         ItemKind.FILE -> openFile(activity, item.payload)
-        ItemKind.SNIPPET -> copySnippet(item.payload)
+        ItemKind.SNIPPET -> copySnippet(activity, item.payload)
         ItemKind.CLIPBOARD -> {
             Graph.clipboard.copy(item.payload, item.subtitle == "hidden")
             true
@@ -185,7 +188,7 @@ object Actions {
     private fun openDirectory(activity: Activity, documentUri: Uri): Boolean {
         val intent = Intent(Intent.ACTION_VIEW).setDataAndType(documentUri, DocumentsContract.Document.MIME_TYPE_DIR)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        return start(activity, intent)
+        return reported(activity, start(activity, intent))
     }
 
     fun shareFile(activity: Activity, path: String): Boolean {
@@ -203,16 +206,19 @@ object Actions {
             if (parentId != null && treeUri != null) {
                 return openDirectory(activity, DocumentsContract.buildDocumentUriUsingTree(documentUri, parentId))
             }
-            return false
+            return reported(activity, false)
         }
         val target = File(path).let { if (it.isDirectory) it else it.parentFile } ?: return false
-        val relative = target.absolutePath.substringAfter("/storage/emulated/0", "").trimStart('/')
-        val documentId = "primary:$relative"
-        val uri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", documentId)
+        val uri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", PathNames.documentId(target.absolutePath))
         val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (start(activity, intent)) return true
-        return start(activity, Intent.createChooser(intent, null))
+        return reported(activity, start(activity, Intent.createChooser(intent, null)))
+    }
+
+    fun reported(activity: Activity, ok: Boolean): Boolean {
+        if (!ok) Toast.makeText(activity, R.string.open_failed, Toast.LENGTH_SHORT).show()
+        return ok
     }
 
     fun mimeOf(name: String): String {
@@ -220,8 +226,9 @@ object Actions {
         return MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: "*/*"
     }
 
-    private fun copySnippet(body: String): Boolean {
-        val clip = Graph.clipboard.all().firstOrNull()?.text
+    private fun copySnippet(activity: Activity, body: String): Boolean {
+        val live = if (body.contains("{clipboard}")) ClipText.read(activity, SNIPPET_CLIP_LIMIT) else ""
+        val clip = live.ifEmpty { Graph.clipboard.all().firstOrNull()?.text }
         Graph.clipboard.copy(SnippetExpander.expand(body, LocalDateTime.now(), clip), false)
         return true
     }

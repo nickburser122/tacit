@@ -339,4 +339,32 @@ class BackupCompatTest {
         assertEquals(IntentSanitizer.canonical(granted, own), kept[1].target)
         assertFalse(kept[1].target.contains("launchFlags"))
     }
+
+    @Test
+    fun aSettingWithTheWrongTypeNeverBreaksReadingIt() {
+        val prefs = JSONObject().put("result_count", "many").put("clock", 7).put("theme", 3)
+        Backup.import(JSONObject().put("tacit_backup", 2).put("prefs", prefs).toString())
+        assertEquals(8, Graph.prefs.resultCount)
+        assertFalse(Graph.prefs.showClock)
+        assertEquals("system", Graph.prefs.theme)
+    }
+
+    @Test
+    fun aBrokenBackupChangesNothing() {
+        Graph.snippets.replaceAll(listOf(Snippet("keep", ";k", "Keep", "kept")))
+        val backup = JSONObject().put("tacit_backup", 2)
+            .put("prefs", JSONObject().put("result_count", 12))
+            .put("aliases", JSONObject().put("app:x", JSONArray().put("xx")))
+            .put("snippets", JSONArray().put("not an object"))
+        var failed = false
+        try {
+            Backup.import(backup.toString())
+        } catch (error: org.json.JSONException) {
+            failed = true
+        }
+        assertEquals(true, failed)
+        assertEquals(8, Graph.prefs.resultCount)
+        assertEquals(listOf("keep"), Graph.snippets.all().map { it.id })
+        assertEquals(emptyList<String>(), Graph.aliases.get("app:x"))
+    }
 }

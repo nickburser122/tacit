@@ -58,7 +58,7 @@ object Backup {
     fun import(text: String) {
         val root = JSONObject(text)
         if (!supported(root)) return
-        root.optJSONObject("prefs")?.let { prefs ->
+        val prefsEditor = root.optJSONObject("prefs")?.let { prefs ->
             val editor = Graph.prefs.store.edit()
             for (key in prefs.keys()) {
                 if (key == "clip_last_ts" || key == "granted_trees") continue
@@ -71,25 +71,24 @@ object Backup {
                     is Double -> editor.putInt(key, value.toInt())
                 }
             }
-            editor.apply()
+            editor
         }
-        root.optJSONObject("aliases")?.let { aliases ->
+        val aliasMap = root.optJSONObject("aliases")?.let { aliases ->
             val map = HashMap<String, List<String>>()
             for (key in aliases.keys()) {
                 val array = aliases.getJSONArray(key)
                 map[key] = (0 until array.length()).map { array.getString(it) }
             }
-            Graph.aliases.setMany(map)
+            map
         }
-        root.optJSONArray("snippets")?.let { array ->
-            val list = (0 until array.length()).map { index ->
+        val snippetList = root.optJSONArray("snippets")?.let { array ->
+            (0 until array.length()).map { index ->
                 val item = array.getJSONObject(index)
                 Snippet(item.optString("id").ifEmpty { Graph.snippets.newId() }, item.optString("trigger"), item.optString("title"), item.optString("body"))
             }
-            Graph.snippets.replaceAll(list)
         }
-        root.optJSONArray("quicklinks")?.let { array ->
-            val list = (0 until array.length()).mapNotNull { index ->
+        val quicklinkList = root.optJSONArray("quicklinks")?.let { array ->
+            (0 until array.length()).mapNotNull { index ->
                 val item = array.getJSONObject(index)
                 val type = runCatching { QuicklinkType.valueOf(item.optString("type")) }.getOrNull() ?: return@mapNotNull null
                 val imported = QuicklinkRules.importTarget(type, item.optString("target")) ?: return@mapNotNull null
@@ -99,7 +98,10 @@ object Backup {
                 Quicklink(item.optString("id").ifEmpty { Graph.quicklinks.newId() }, item.optString("name"), type,
                     target, item.optString("detail"), QuicklinkIcon.normalize(type, item.optString("icon")))
             }
-            Graph.quicklinks.replaceAll(list)
         }
+        prefsEditor?.apply()
+        aliasMap?.let { Graph.aliases.setMany(it) }
+        snippetList?.let { Graph.snippets.replaceAll(it) }
+        quicklinkList?.let { Graph.quicklinks.replaceAll(it) }
     }
 }

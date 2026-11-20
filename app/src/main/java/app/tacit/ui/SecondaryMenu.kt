@@ -41,7 +41,7 @@ object SecondaryMenu {
                 val pkg = item.payload.substringBefore('/')
                 add(R.string.menu_app_info) { Graph.apps.openAppInfo(item.payload) }
                 add(R.string.menu_notifications) {
-                    Actions.start(activity, Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, pkg))
+                    Actions.reported(activity, Actions.start(activity, Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, pkg)))
                 }
                 if (Graph.apps.canUninstall(item.payload)) add(R.string.menu_uninstall) {
                     val intent = Graph.apps.uninstallIntent(item.payload)
@@ -54,10 +54,10 @@ object SecondaryMenu {
                     Graph.requestRebuild()
                 }
             }
-            ItemKind.CONTACT -> add(R.string.menu_open_contact) { Actions.openContact(activity, item) }
+            ItemKind.CONTACT -> add(R.string.menu_open_contact) { Actions.reported(activity, Actions.openContact(activity, item)) }
             ItemKind.FILE -> {
                 add(R.string.menu_alias) { editAlias(activity, item, changed) }
-                add(R.string.menu_share) { Actions.shareFile(activity, item.payload) }
+                add(R.string.menu_share) { Actions.reported(activity, Actions.shareFile(activity, item.payload)) }
                 add(R.string.menu_open_folder) { Actions.openFolder(activity, item.payload) }
                 add(R.string.menu_copy_path) { Graph.clipboard.copy(item.payload, false) }
             }

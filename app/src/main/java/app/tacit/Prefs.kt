@@ -54,11 +54,11 @@ class Prefs(context: Context) {
     var settingsSearchFallback by flag("settings_fallback", true)
 
     var pins: Set<String>
-        get() = store.getStringSet("pins", emptySet()) ?: emptySet()
+        get() = try { store.getStringSet("pins", emptySet()) ?: emptySet() } catch (error: ClassCastException) { emptySet() }
         set(value) = store.edit().putStringSet("pins", HashSet(value)).apply()
 
     var hidden: Set<String>
-        get() = store.getStringSet("hidden", emptySet()) ?: emptySet()
+        get() = try { store.getStringSet("hidden", emptySet()) ?: emptySet() } catch (error: ClassCastException) { emptySet() }
         set(value) = store.edit().putStringSet("hidden", HashSet(value)).apply()
 
     fun kinds(): List<ItemKind> = kindOrder.split(',').mapNotNull { name -> ItemKind.entries.firstOrNull { it.name == name.trim() } }
@@ -74,28 +74,32 @@ class Prefs(context: Context) {
     }
 
     private fun flag(key: String, default: Boolean) = object : ReadWriteProperty<Any?, Boolean> {
-        override fun getValue(thisRef: Any?, property: KProperty<*>): Boolean = store.getBoolean(key, default)
+        override fun getValue(thisRef: Any?, property: KProperty<*>): Boolean =
+            try { store.getBoolean(key, default) } catch (error: ClassCastException) { default }
         override fun setValue(thisRef: Any?, property: KProperty<*>, value: Boolean) {
             store.edit().putBoolean(key, value).apply()
         }
     }
 
     private fun text(key: String, default: String) = object : ReadWriteProperty<Any?, String> {
-        override fun getValue(thisRef: Any?, property: KProperty<*>): String = store.getString(key, default) ?: default
+        override fun getValue(thisRef: Any?, property: KProperty<*>): String =
+            try { store.getString(key, default) ?: default } catch (error: ClassCastException) { default }
         override fun setValue(thisRef: Any?, property: KProperty<*>, value: String) {
             store.edit().putString(key, value).apply()
         }
     }
 
     private fun number(key: String, default: Int) = object : ReadWriteProperty<Any?, Int> {
-        override fun getValue(thisRef: Any?, property: KProperty<*>): Int = store.getInt(key, default)
+        override fun getValue(thisRef: Any?, property: KProperty<*>): Int =
+            try { store.getInt(key, default) } catch (error: ClassCastException) { default }
         override fun setValue(thisRef: Any?, property: KProperty<*>, value: Int) {
             store.edit().putInt(key, value).apply()
         }
     }
 
     private fun long(key: String, default: Long) = object : ReadWriteProperty<Any?, Long> {
-        override fun getValue(thisRef: Any?, property: KProperty<*>): Long = store.getLong(key, default)
+        override fun getValue(thisRef: Any?, property: KProperty<*>): Long =
+            try { store.getLong(key, default) } catch (error: ClassCastException) { default }
         override fun setValue(thisRef: Any?, property: KProperty<*>, value: Long) {
             store.edit().putLong(key, value).apply()
         }

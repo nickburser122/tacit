@@ -164,22 +164,29 @@ class ClipboardStore(private val context: Context, private val prefs: Prefs) {
     }
 
     private fun save(list: List<ClipEntry>) {
-        val buffer = ByteArrayOutputStream()
-        DataOutputStream(buffer).use { out ->
-            out.writeInt(list.size)
-            for (entry in list) {
-                val bytes = entry.text.toByteArray(Charsets.UTF_8)
-                out.writeLong(entry.id)
-                out.writeInt(bytes.size)
-                out.write(bytes)
-                out.writeLong(entry.time)
-                out.writeByte(entry.sensitivity.ordinal)
-                out.writeLong(entry.expiresAt)
+        try {
+            val buffer = ByteArrayOutputStream()
+            DataOutputStream(buffer).use { out ->
+                out.writeInt(list.size)
+                for (entry in list) {
+                    val bytes = entry.text.toByteArray(Charsets.UTF_8)
+                    out.writeLong(entry.id)
+                    out.writeInt(bytes.size)
+                    out.write(bytes)
+                    out.writeLong(entry.time)
+                    out.writeByte(entry.sensitivity.ordinal)
+                    out.writeLong(entry.expiresAt)
+                }
             }
+            val temp = File(file.parentFile, "clips.bin.tmp")
+            temp.writeBytes(Crypto.encrypt(buffer.toByteArray()))
+            if (!temp.renameTo(file)) {
+                file.delete()
+                temp.renameTo(file)
+            }
+        } catch (error: Exception) {
+            File(file.parentFile, "clips.bin.tmp").delete()
         }
-        val temp = File(file.parentFile, "clips.bin.tmp")
-        temp.writeBytes(Crypto.encrypt(buffer.toByteArray()))
-        temp.renameTo(file)
     }
 }
 

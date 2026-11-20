@@ -1,6 +1,7 @@
 package app.tacit.core
 
 import java.net.URLEncoder
+import java.time.DateTimeException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -47,7 +48,7 @@ object QuicklinkRules {
             when {
                 name == "query" && format == null -> encode(query)
                 name == "clipboard" && format == null -> encode(clipboard)
-                name == "date" -> encode(dateFormatter(format).format(now))
+                name == "date" -> encode(formatDate(format, now))
                 else -> match.value
             }
         }
@@ -56,9 +57,16 @@ object QuicklinkRules {
         token.findAll(template).all { match ->
             val format = match.groups[2]?.value
             when (match.groupValues[1]) {
-                "date" -> format == null || runCatching { DateTimeFormatter.ofPattern(format) }.isSuccess
+                "date" -> format == null || runCatching { DateTimeFormatter.ofPattern(format).format(LocalDateTime.now()) }.isSuccess
                 else -> format == null
             }
+        }
+
+    private fun formatDate(pattern: String?, now: LocalDateTime): String =
+        try {
+            dateFormatter(pattern).format(now)
+        } catch (error: DateTimeException) {
+            DateTimeFormatter.ISO_LOCAL_DATE.format(now)
         }
 
     private fun dateFormatter(pattern: String?): DateTimeFormatter =

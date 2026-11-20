@@ -25,6 +25,8 @@ class Calculator(
 
     private val context get() = MathContext(precision, RoundingMode.HALF_EVEN)
 
+    private val MAX_INPUT = 400
+
     private val conversion = Regex("^(-?[0-9.,]+(?:e-?[0-9]+)?)\\s*([a-z°\"'/ 0-9]+?)\\s+(?:in|to|as|into|=|->)\\s+([a-z°\"'/ 0-9]+)$")
     private val baseConversion = Regex("^(.+?)\\s+(?:in|to|as)\\s+(hex|hexadecimal|binary|bin|octal|oct|decimal|dec)$")
     private val percentOf = Regex("^([0-9.]+)\\s*%\\s*of\\s+(.+)$")
@@ -45,6 +47,7 @@ class Calculator(
     ).map { (word, symbol) -> Regex("(?<=[\\s\\d)])${Regex.escape(word)}(?=[\\s\\d(])") to symbol }
 
     fun evaluate(raw: String): CalcResult? {
+        if (raw.length > MAX_INPUT) return null
         val text = prepare(raw)
         if (text.isEmpty()) return null
         return try {
@@ -56,6 +59,8 @@ class Calculator(
         } catch (error: NumberFormatException) {
             null
         } catch (error: java.time.DateTimeException) {
+            null
+        } catch (error: StackOverflowError) {
             null
         }
     }

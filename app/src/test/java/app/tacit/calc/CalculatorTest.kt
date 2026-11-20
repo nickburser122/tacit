@@ -123,4 +123,11 @@ class CalculatorTest {
             calc.evaluate(text)
         }
     }
+
+    @Test
+    fun veryLongInputIsRefusedWithoutCrashing() {
+        assertNull(value("=" + "(".repeat(20_000) + "1"))
+        assertNull(value("=" + "1+".repeat(5_000) + "1"))
+        assertEquals("4", value("2+2"))
+    }
 }

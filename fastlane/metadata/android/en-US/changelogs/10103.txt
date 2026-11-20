@@ -1,0 +1,6 @@
+Stability fixes.
+• No more crash from a snippet or quicklink with an unusable date format
+• Safer clipboard history and backups
+• Open folder works on SD cards
+• {clipboard} in snippets reads the clipboard
+• Tacit says when something can't be opened

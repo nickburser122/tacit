@@ -11,11 +11,14 @@ import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.provider.Settings
+import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
+import app.tacit.actions.Actions
 import app.tacit.clip.ClipboardStore
 import app.tacit.data.AliasStore
 import app.tacit.sources.SettingSource
+import app.tacit.ui.SearchActivity
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
@@ -106,6 +109,15 @@ class PlatformContractTest {
         val unresolved = source.items().filter { it.payload.startsWith("action|") || it.payload.startsWith("component|") }
             .mapNotNull { item -> source.intentFor(item.payload)?.takeIf { pm.resolveActivity(it, 0) == null }?.let { item.label } }
         assertTrue("Unresolvable settings rows: $unresolved", unresolved.isEmpty())
+    }
+
+    @Test
+    fun anIntentNobodyHandlesIsReportedAsNoApp() {
+        ActivityScenario.launch(SearchActivity::class.java).use { scenario ->
+            var result: Actions.Launch? = null
+            scenario.onActivity { result = Actions.launch(it, Intent("app.tacit.test.NOBODY_HANDLES_THIS")) }
+            assertEquals(Actions.Launch.NO_APP, result)
+        }
     }
 
     @Test

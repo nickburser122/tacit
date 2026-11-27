@@ -21,6 +21,7 @@ import app.tacit.Graph
 import app.tacit.IndexCache
 import app.tacit.R
 import app.tacit.TacitApp
+import app.tacit.actions.Actions
 import app.tacit.data.Backup
 import app.tacit.data.BackupSummary
 import app.tacit.clip.ClipLock
@@ -173,11 +174,11 @@ class SettingsActivity : Activity() {
         action(getString(R.string.set_assistant)) { safely { startActivity(Intent(Settings.ACTION_MANAGE_DEFAULT_APPS_SETTINGS)) } }
         action(getString(R.string.keys)) { showKeys() }
         action(getString(R.string.export_all)) {
-            startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+            Actions.pick(this, Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("application/json").putExtra(Intent.EXTRA_TITLE, "tacit-backup.json"), REQ_EXPORT)
         }
         action(getString(R.string.import_all)) {
-            startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*"), REQ_IMPORT)
+            Actions.pick(this, Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*"), REQ_IMPORT)
         }
         if (Graph.crashReportSaved) action(getString(R.string.share_crash)) { shareCrashReport() }
         action(getString(R.string.rebuild_index)) {
@@ -291,7 +292,7 @@ class SettingsActivity : Activity() {
     private fun pickFolder() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION)
-        runCatching { startActivityForResult(intent, REQ_TREE) }
+        Actions.pick(this, intent, REQ_TREE)
     }
 
     private fun fileSourceRows() {

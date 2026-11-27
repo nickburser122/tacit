@@ -6,6 +6,7 @@ import android.content.ClipData
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
@@ -179,17 +180,23 @@ object Actions {
         if (mime == DocumentsContract.Document.MIME_TYPE_DIR) return openDirectory(activity, uri)
         val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.clipData = ClipData.newRawUri("", uri)
-        val direct = activity.packageManager.resolveActivity(intent, 0) != null
-        val launched = start(activity, if (direct) intent else Intent.createChooser(intent, null))
-        if (!launched) Toast.makeText(activity, R.string.file_no_app, Toast.LENGTH_SHORT).show()
-        return launched
+        val direct = activity.packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY) != null
+        return reportedLaunch(activity, launch(activity, if (direct) intent else Intent.createChooser(intent, null)), R.string.file_no_app)
     }
 
-    private fun openDirectory(activity: Activity, documentUri: Uri): Boolean {
-        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(documentUri, DocumentsContract.Document.MIME_TYPE_DIR)
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        return reported(activity, start(activity, intent))
+    private fun directoryIntent(uri: Uri, grant: Boolean): Intent {
+        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR)
+        return if (grant) intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION) else intent
     }
+
+    fun showDirectory(activity: Activity, uri: Uri, grant: Boolean): Launch {
+        val first = launch(activity, directoryIntent(uri, grant))
+        if (first == Launch.OK || !grant) return first
+        return launch(activity, directoryIntent(uri, false))
+    }
+
+    private fun openDirectory(activity: Activity, documentUri: Uri): Boolean =
+        reportedLaunch(activity, showDirectory(activity, documentUri, true), R.string.folder_no_app)
 
     fun shareFile(activity: Activity, path: String): Boolean {
         val uri = contentUri(activity, path)
@@ -210,10 +217,16 @@ object Actions {
         }
         val target = File(path).let { if (it.isDirectory) it else it.parentFile } ?: return false
         val uri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", PathNames.documentId(target.absolutePath))
-        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(uri, DocumentsContract.Document.MIME_TYPE_DIR)
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (start(activity, intent)) return true
-        return reported(activity, start(activity, Intent.createChooser(intent, null)))
+        return reportedLaunch(activity, showDirectory(activity, uri, false), R.string.folder_no_app)
+    }
+
+    private fun reportedLaunch(activity: Activity, result: Launch, noApp: Int): Boolean {
+        when (result) {
+            Launch.OK -> return true
+            Launch.NO_APP -> Toast.makeText(activity, noApp, Toast.LENGTH_SHORT).show()
+            Launch.DENIED -> Toast.makeText(activity, R.string.open_denied, Toast.LENGTH_SHORT).show()
+        }
+        return false
     }
 
     fun reported(activity: Activity, ok: Boolean): Boolean {
@@ -236,12 +249,27 @@ object Actions {
     fun web(activity: Activity, engine: WebEngine, query: String): Boolean =
         start(activity, Intent(Intent.ACTION_VIEW, Uri.parse(engine.urlFor(query))))
 
-    fun start(activity: Activity, intent: Intent): Boolean = try {
+    enum class Launch { OK, NO_APP, DENIED }
+
+    fun launch(activity: Activity, intent: Intent): Launch = try {
         activity.startActivity(detached(activity, intent))
+        Launch.OK
+    } catch (error: ActivityNotFoundException) {
+        Launch.NO_APP
+    } catch (error: SecurityException) {
+        Launch.DENIED
+    }
+
+    fun start(activity: Activity, intent: Intent): Boolean = launch(activity, intent) == Launch.OK
+
+    fun pick(activity: Activity, intent: Intent, request: Int): Boolean = try {
+        activity.startActivityForResult(intent, request)
         true
     } catch (error: ActivityNotFoundException) {
+        Toast.makeText(activity, R.string.picker_missing, Toast.LENGTH_LONG).show()
         false
     } catch (error: SecurityException) {
+        Toast.makeText(activity, R.string.picker_missing, Toast.LENGTH_LONG).show()
         false
     }
 

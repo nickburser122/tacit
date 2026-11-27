@@ -102,6 +102,9 @@
     <string name="file_missing">This file no longer exists</string>
     <string name="file_no_app">No app can open this file</string>
     <string name="open_failed">Couldn’t open that</string>
+    <string name="open_denied">Android blocked opening that</string>
+    <string name="folder_no_app">No app can show this folder</string>
+    <string name="picker_missing">No file picker found on this phone</string>
     <string name="ql_try">Try</string>
     <string name="ql_icon">Icon</string>
     <string name="ql_icon_value">Icon: %1$s</string>

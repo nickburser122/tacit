@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import app.tacit.Graph
 import app.tacit.R
+import app.tacit.actions.Actions
 import app.tacit.core.RefreshSources
 import app.tacit.core.RowDensity
 import app.tacit.data.Csv
@@ -40,12 +41,12 @@ class SnippetsActivity : Activity() {
         tools.addView(Ui.chip(this, palette, getString(R.string.add)) { edit(null) })
         tools.addView(View(this), LinearLayout.LayoutParams(gap, 1))
         tools.addView(Ui.chip(this, palette, getString(R.string.export_csv)) {
-            startActivityForResult(Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
+            Actions.pick(this, Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("text/csv").putExtra(Intent.EXTRA_TITLE, "tacit-snippets.csv"), 51)
         })
         tools.addView(View(this), LinearLayout.LayoutParams(gap, 1))
         tools.addView(Ui.chip(this, palette, getString(R.string.import_csv)) {
-            startActivityForResult(Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*"), 52)
+            Actions.pick(this, Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*"), 52)
         })
         root.addView(tools)
         root.addView(Ui.text(this, getString(R.string.snippet_placeholders), 12f, palette.muted).apply { maxLines = 3 })

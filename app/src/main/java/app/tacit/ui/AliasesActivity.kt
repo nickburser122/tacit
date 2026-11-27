@@ -17,6 +17,7 @@ import android.widget.TextView
 import android.widget.Toast
 import app.tacit.Graph
 import app.tacit.R
+import app.tacit.actions.Actions
 import app.tacit.core.AliasRules
 import app.tacit.core.ItemKind
 import app.tacit.core.RowDensity
@@ -199,12 +200,12 @@ class AliasesActivity : Activity() {
     private fun exportCsv() {
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE)
             .setType("text/csv").putExtra(Intent.EXTRA_TITLE, "tacit-aliases-${category.slug}.csv")
-        startActivityForResult(intent, REQUEST_EXPORT)
+        Actions.pick(this, intent, REQUEST_EXPORT)
     }
 
     private fun importCsv() {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).addCategory(Intent.CATEGORY_OPENABLE).setType("*/*")
-        startActivityForResult(intent, REQUEST_IMPORT)
+        Actions.pick(this, intent, REQUEST_IMPORT)
     }
 
     @Deprecated("Platform API")

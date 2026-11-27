@@ -1,0 +1,4 @@
+Fixes and clearer errors.
+• Open folder no longer fails on some file managers
+• No more crash from Export, Import or pickers on a phone without a file picker
+• Tacit says why a folder or file can't be opened

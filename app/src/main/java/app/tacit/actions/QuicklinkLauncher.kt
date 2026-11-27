@@ -69,9 +69,7 @@ object QuicklinkLauncher {
         val document = if (DocumentsContract.isTreeUri(uri)) {
             runCatching { DocumentsContract.buildDocumentUriUsingTree(uri, DocumentsContract.getTreeDocumentId(uri)) }.getOrNull() ?: return false
         } else uri
-        val intent = Intent(Intent.ACTION_VIEW).setDataAndType(document, DocumentsContract.Document.MIME_TYPE_DIR)
-            .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        return Actions.start(activity, intent)
+        return Actions.showDirectory(activity, document, true) == Actions.Launch.OK
     }
 
     private fun openContact(activity: Activity, target: String): Boolean {

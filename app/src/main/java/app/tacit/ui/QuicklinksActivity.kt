@@ -147,7 +147,7 @@ class QuicklinksActivity : Activity() {
                 Toast.makeText(this, R.string.ql_cant_keep, Toast.LENGTH_LONG).show()
             }
         }
-        startActivityForResult(intent, REQUEST_DOCUMENT)
+        if (!Actions.pick(this, intent, REQUEST_DOCUMENT)) pending = null
     }
 
     @Deprecated("Platform API")

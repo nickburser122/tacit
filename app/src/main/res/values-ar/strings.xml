@@ -100,6 +100,9 @@
     <string name="file_missing">هذا الملف لم يعد موجودًا</string>
     <string name="file_no_app">لا يوجد تطبيق يمكنه فتح هذا الملف</string>
     <string name="open_failed">تعذّر فتح هذا</string>
+    <string name="open_denied">منع أندرويد فتح هذا</string>
+    <string name="folder_no_app">لا يوجد تطبيق يمكنه عرض هذا المجلد</string>
+    <string name="picker_missing">لم يُعثر على منتقي ملفات في هذا الهاتف</string>
     <string name="ql_try">جرّب</string>
     <string name="ql_icon">الأيقونة</string>
     <string name="ql_icon_value">الأيقونة: %1$s</string>

@@ -8,6 +8,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.AlarmClock
 import android.provider.CalendarContract
+import android.provider.DocumentsContract
 import android.widget.ListView
 import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.ActivityScenario
@@ -23,6 +24,7 @@ import androidx.test.espresso.intent.matcher.IntentMatchers.hasData
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey
 import androidx.test.espresso.intent.matcher.IntentMatchers.hasFlags
+import androidx.test.espresso.intent.matcher.IntentMatchers.hasType
 import androidx.test.espresso.matcher.ViewMatchers.withId
 import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -43,6 +45,7 @@ import app.tacit.ui.SearchActivity
 import app.tacit.ui.SecondaryMenu
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.anyOf
+import org.hamcrest.Matchers.not
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -160,6 +163,28 @@ class ActionsTest {
             var launched = true
             scenario.onActivity { launched = Actions.openFile(it, missing.absolutePath) }
             assertFalse(launched)
+        }
+    }
+
+    @Test
+    fun openingAFolderViewsItWithoutAUriGrant() {
+        val folder = File(context.getExternalFilesDir(null)!!, "m4-folder").apply { mkdirs() }
+        try {
+            ActivityScenario.launch(SearchActivity::class.java).use { scenario ->
+                var launched = false
+                scenario.onActivity { launched = Actions.openFolder(it, folder.absolutePath) }
+                assertTrue(launched)
+                intended(
+                    allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasType(DocumentsContract.Document.MIME_TYPE_DIR),
+                        hasFlags(Intent.FLAG_ACTIVITY_NEW_TASK),
+                        not(hasFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
+                    )
+                )
+            }
+        } finally {
+            folder.delete()
         }
     }
 
